@@ -9,10 +9,8 @@ updates:
       day: "monday"
       time: "06:00"
     open-pull-requests-limit: 10
-    reviewers:
-      - "theany-org/maintainers"
     assignees:
-      - "theany-org/maintainers"
+      - "Epic-R-R"
     commit-message:
       prefix: "deps"
       prefix-development: "deps-dev"
@@ -29,10 +27,8 @@ updates:
       day: "monday"
       time: "06:00"
     open-pull-requests-limit: 5
-    reviewers:
-      - "theany-org/maintainers"
     assignees:
-      - "theany-org/maintainers"
+      - "Epic-R-R"
     commit-message:
       prefix: "ci"
       include: "scope"

@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+trackit/db/__pycache__/
 
 # C extensions
 *.so

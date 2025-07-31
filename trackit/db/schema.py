@@ -57,12 +57,12 @@ CREATE_TRIGGERS = [
 
 class DatabaseManager:
     """Manages database connections and schema operations."""
-    
+
     def __init__(self, db_path: Path):
         """Initialize database manager with the given database path."""
         self.db_path = db_path
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
-    
+
     @contextmanager
     def get_connection(self):
         """Get a database connection with proper cleanup."""
@@ -74,16 +74,16 @@ class DatabaseManager:
             yield conn
         finally:
             conn.close()
-    
+
     def initialize_database(self) -> None:
         """Initialize the database with the current schema."""
         with self.get_connection() as conn:
             # Create schema version table first
             conn.execute(CREATE_SCHEMA_VERSION_TABLE)
-            
+
             # Check current schema version
             current_version = self._get_schema_version(conn)
-            
+
             if current_version is None:
                 # Fresh database, create all tables
                 self._create_tables(conn)
@@ -91,22 +91,22 @@ class DatabaseManager:
             elif current_version < SCHEMA_VERSION:
                 # Migrate to newer version
                 self._migrate_database(conn, current_version, SCHEMA_VERSION)
-            
+
             conn.commit()
-    
+
     def _create_tables(self, conn: sqlite3.Connection) -> None:
         """Create all database tables."""
         # Create main tables
         conn.execute(CREATE_SESSIONS_TABLE)
-        
+
         # Create indexes
         for index_sql in CREATE_INDEXES:
             conn.execute(index_sql)
-        
+
         # Create triggers
         for trigger_sql in CREATE_TRIGGERS:
             conn.execute(trigger_sql)
-    
+
     def _get_schema_version(self, conn: sqlite3.Connection) -> Optional[int]:
         """Get the current schema version."""
         try:
@@ -116,48 +116,54 @@ class DatabaseManager:
         except sqlite3.OperationalError:
             # Table doesn't exist yet
             return None
-    
+
     def _set_schema_version(self, conn: sqlite3.Connection, version: int) -> None:
         """Set the schema version."""
         conn.execute("INSERT INTO schema_version (version) VALUES (?)", (version,))
-    
-    def _migrate_database(self, conn: sqlite3.Connection, from_version: int, to_version: int) -> None:
+
+    def _migrate_database(
+        self, conn: sqlite3.Connection, from_version: int, to_version: int
+    ) -> None:
         """Migrate database from one version to another."""
         # Currently no migrations needed as this is version 1
         # Future migrations would be implemented here
         pass
-    
+
     def vacuum_database(self) -> None:
         """Optimize the database by running VACUUM."""
         with self.get_connection() as conn:
             conn.execute("VACUUM")
-    
+
     def get_database_stats(self) -> dict:
         """Get basic database statistics."""
         with self.get_connection() as conn:
-            cursor = conn.execute("""
+            cursor = conn.execute(
+                """
                 SELECT 
                     COUNT(*) as total_sessions,
                     COUNT(CASE WHEN is_active = 1 THEN 1 END) as active_sessions,
                     MIN(start_time) as first_session,
                     MAX(start_time) as last_session
                 FROM sessions
-            """)
+            """
+            )
             result = cursor.fetchone()
-            
+
             if result:
                 return {
-                    'total_sessions': result['total_sessions'],
-                    'active_sessions': result['active_sessions'],
-                    'first_session': result['first_session'],
-                    'last_session': result['last_session'],
-                    'database_size': self.db_path.stat().st_size if self.db_path.exists() else 0,
+                    "total_sessions": result["total_sessions"],
+                    "active_sessions": result["active_sessions"],
+                    "first_session": result["first_session"],
+                    "last_session": result["last_session"],
+                    "database_size": (
+                        self.db_path.stat().st_size if self.db_path.exists() else 0
+                    ),
                 }
             else:
                 return {
-                    'total_sessions': 0,
-                    'active_sessions': 0,
-                    'first_session': None,
-                    'last_session': None,
-                    'database_size': 0,
+                    "total_sessions": 0,
+                    "active_sessions": 0,
+                    "first_session": None,
+                    "last_session": None,
+                    "database_size": 0,
                 }
