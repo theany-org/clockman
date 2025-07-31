@@ -206,11 +206,43 @@ def log(
 
 
 @app.command()
+def tray() -> None:
+    """Launch TrackIt system tray interface."""
+    try:
+        from ..tray import TrayManager
+        
+        console.print("[green]Starting TrackIt system tray...[/green]")
+        console.print("[dim]The tray icon should appear in your system tray.[/dim]")
+        console.print("[dim]Right-click the icon to access time tracking options.[/dim]")
+        console.print("[dim]Press Ctrl+C to stop the tray application.[/dim]")
+        
+        tray_manager = TrayManager()
+        tray_manager.run()
+        
+    except ImportError as e:
+        console.print(f"[red]Error: System tray dependencies not available: {e}[/red]")
+        console.print("[yellow]Install with: pip install trackit[tray][/yellow]")
+        raise typer.Exit(1)
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Stopping system tray...[/yellow]")
+    except Exception as e:
+        console.print(f"[red]Error starting system tray: {e}[/red]")
+        raise typer.Exit(1)
+
+
+@app.command()
 def version() -> None:
     """Show TrackIt version information."""
     from .. import __version__
 
     console.print(f"TrackIt version {__version__}")
+
+
+def version_callback(value: bool) -> None:
+    """Version callback that prints version and exits."""
+    if value:
+        version()
+        raise typer.Exit()
 
 
 @app.callback()
@@ -219,7 +251,7 @@ def main(
     version: Optional[bool] = typer.Option(
         None,
         "--version",
-        callback=lambda x: version() if x else None,
+        callback=version_callback,
         is_eager=True,
         help="Show version and exit",
     ),

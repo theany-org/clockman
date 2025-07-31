@@ -44,6 +44,11 @@ dev = [
     "mypy>=1.5.0",
     "pre-commit>=3.4.0",
 ]
+tray = [
+    "pystray>=0.19.4",
+    "pillow>=10.0.0",
+    "plyer>=2.1.0",
+]
 
 [project.scripts]
 tracker = "trackit.cli.main:app"
