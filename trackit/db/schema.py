@@ -5,9 +5,9 @@ This module contains the SQL schema and migration logic for the SQLite database.
 """
 
 import sqlite3
-from pathlib import Path
-from typing import Optional, List
 from contextlib import contextmanager
+from pathlib import Path
+from typing import Any, Dict, Generator, Optional
 
 # Database schema version
 SCHEMA_VERSION = 1
@@ -64,7 +64,7 @@ class DatabaseManager:
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
 
     @contextmanager
-    def get_connection(self):
+    def get_connection(self) -> Generator[sqlite3.Connection, None, None]:
         """Get a database connection with proper cleanup."""
         conn = sqlite3.connect(str(self.db_path))
         try:
@@ -134,7 +134,7 @@ class DatabaseManager:
         with self.get_connection() as conn:
             conn.execute("VACUUM")
 
-    def get_database_stats(self) -> dict:
+    def get_database_stats(self) -> Dict[str, Any]:
         """Get basic database statistics."""
         with self.get_connection() as conn:
             cursor = conn.execute(

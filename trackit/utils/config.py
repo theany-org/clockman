@@ -6,14 +6,15 @@ This module handles user configuration, data directories, and settings.
 
 import json
 from pathlib import Path
-from typing import Dict, Any, Optional
-from platformdirs import user_data_dir, user_config_dir
+from typing import Any, Dict, Optional, cast
+
+from platformdirs import user_config_dir, user_data_dir
 
 
 class ConfigManager:
     """Manages TrackIt configuration and data directories."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize configuration manager."""
         self.app_name = "trackit"
         self.config_dir = Path(user_config_dir(self.app_name))
@@ -119,39 +120,39 @@ class ConfigManager:
 
     def get_date_format(self) -> str:
         """Get the date format string."""
-        return self.get("date_format", "%Y-%m-%d")
+        return cast(str, self.get("date_format", "%Y-%m-%d"))
 
     def get_time_format(self) -> str:
         """Get the time format string."""
-        return self.get("time_format", "%H:%M:%S")
+        return cast(str, self.get("time_format", "%H:%M:%S"))
 
     def get_color(self, element: str) -> str:
         """Get color for a UI element."""
-        return self.get(f"colors.{element}", "white")
+        return cast(str, self.get(f"colors.{element}", "white"))
 
     def is_compact_mode(self) -> bool:
         """Check if compact display mode is enabled."""
-        return self.get("display.compact_mode", False)
+        return cast(bool, self.get("display.compact_mode", False))
 
     def show_seconds(self) -> bool:
         """Check if seconds should be shown in time displays."""
-        return self.get("display.show_seconds", True)
+        return cast(bool, self.get("display.show_seconds", True))
 
     def get_max_task_name_length(self) -> int:
         """Get maximum task name length for display."""
-        return self.get("display.max_task_name_length", 50)
+        return cast(int, self.get("display.max_task_name_length", 50))
 
-    def get_default_tags(self) -> list:
+    def get_default_tags(self) -> list[Any]:
         """Get default tags to suggest."""
-        return self.get("default_tags", [])
+        return cast(list[Any], self.get("default_tags", []))
 
     def is_auto_stop_enabled(self) -> bool:
         """Check if auto-stop on inactivity is enabled."""
-        return self.get("auto_stop_inactive", False)
+        return cast(bool, self.get("auto_stop_inactive", False))
 
     def get_inactive_timeout(self) -> int:
         """Get inactivity timeout in minutes."""
-        return self.get("inactive_timeout_minutes", 30)
+        return cast(int, self.get("inactive_timeout_minutes", 30))
 
     def reset_to_defaults(self) -> None:
         """Reset configuration to default values."""

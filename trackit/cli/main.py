@@ -4,15 +4,15 @@ Main CLI entry point for TrackIt.
 This module provides the primary command-line interface using typer.
 """
 
+from typing import List, Optional
+
 import typer
 from rich.console import Console
 from rich.table import Table
-from typing import Optional, List
-from pathlib import Path
 
 from ..core.time_tracker import TimeTracker
 from ..utils.config import get_config_manager
-from ..utils.formatting import format_duration, format_datetime
+from ..utils.formatting import format_datetime, format_duration
 
 # Create the main typer app
 app = typer.Typer(
@@ -89,7 +89,7 @@ def stop() -> None:
 
         stopped_session = time_tracker.stop_session()
 
-        if stopped_session:
+        if stopped_session and stopped_session.end_time:
             duration = stopped_session.end_time - stopped_session.start_time
             console.print(
                 f"[green]✓[/green] Stopped: [bold]{stopped_session.task_name}[/bold]"
@@ -171,7 +171,7 @@ def log(
         table.add_column("Duration", justify="right")
         table.add_column("Tags", style="cyan")
 
-        total_duration = 0
+        total_duration = 0.0
         for entry in entries:
             if entry.end_time:
                 duration = entry.end_time - entry.start_time

@@ -6,11 +6,11 @@ This module provides the data access layer for time tracking sessions.
 
 import json
 import sqlite3
-from datetime import datetime, timezone, date, timedelta
-from typing import List, Optional, Dict, Any
+from datetime import date, datetime, timedelta, timezone
+from typing import Dict, List, Optional
 from uuid import UUID
 
-from .models import TimeSession, DailyStats, ProjectStats
+from .models import DailyStats, ProjectStats, TimeSession
 from .schema import DatabaseManager
 
 
@@ -210,7 +210,7 @@ class SessionRepository:
                 unique_tasks.add(session.task_name)
 
         # Count tag frequency
-        tag_counts = {}
+        tag_counts: Dict[str, int] = {}
         for tag in all_tags:
             tag_counts[tag] = tag_counts.get(tag, 0) + 1
 

@@ -4,14 +4,14 @@ Core time tracking functionality for TrackIt.
 This module contains the main TimeTracker class that orchestrates session management.
 """
 
-from datetime import datetime, timezone, date
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import List, Optional
 from uuid import UUID
 
-from ..db.models import TimeSession, DailyStats, ProjectStats
-from ..db.schema import DatabaseManager
+from ..db.models import DailyStats, ProjectStats, TimeSession
 from ..db.repository import SessionRepository
+from ..db.schema import DatabaseManager
 
 
 class TimeTrackingError(Exception):
@@ -87,6 +87,7 @@ class TimeTracker:
             description=description.strip() if description else None,
             tags=tags or [],
             start_time=datetime.now(timezone.utc),
+            end_time=None,
             is_active=True,
         )
 

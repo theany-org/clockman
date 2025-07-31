@@ -130,13 +130,14 @@ def format_bytes(size: int) -> str:
     Returns:
         Formatted size string (e.g., "1.2 KB", "3.4 MB")
     """
+    size_float = float(size)
     for unit in ["B", "KB", "MB", "GB"]:
-        if size < 1024:
+        if size_float < 1024:
             if unit == "B":
-                return f"{size} {unit}"
-            return f"{size:.1f} {unit}"
-        size /= 1024
-    return f"{size:.1f} TB"
+                return f"{int(size_float)} {unit}"
+            return f"{size_float:.1f} {unit}"
+        size_float /= 1024
+    return f"{size_float:.1f} TB"
 
 
 def format_percentage(value: float, total: float) -> str:

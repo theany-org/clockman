@@ -5,9 +5,10 @@ This module defines the Pydantic models for time tracking sessions and related d
 """
 
 from datetime import datetime, timezone
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 from uuid import UUID, uuid4
-from pydantic import BaseModel, Field, field_validator, ConfigDict
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class TimeSession(BaseModel):
@@ -46,7 +47,7 @@ class TimeSession(BaseModel):
 
     @field_validator("end_time")
     @classmethod
-    def validate_end_time(cls, v, info):
+    def validate_end_time(cls, v: Optional[datetime], info: Any) -> Optional[datetime]:
         """Validate that end_time is after start_time."""
         if v is not None and info.data.get("start_time"):
             if v <= info.data["start_time"]:
@@ -55,7 +56,7 @@ class TimeSession(BaseModel):
 
     @field_validator("tags")
     @classmethod
-    def validate_tags(cls, v):
+    def validate_tags(cls, v: List[str]) -> List[str]:
         """Validate and normalize tags."""
         # Remove duplicates and empty strings, normalize case
         return list(set(tag.lower().strip() for tag in v if tag.strip()))
