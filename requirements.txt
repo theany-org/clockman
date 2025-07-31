@@ -1,0 +1,14 @@
+# TrackIt Production Dependencies
+# These are the core dependencies needed to run TrackIt
+
+# CLI Framework
+typer>=0.9.0
+
+# Terminal Output
+rich>=13.0.0
+
+# Cross-platform directories
+platformdirs>=4.0.0
+
+# Data validation
+pydantic>=2.5.0

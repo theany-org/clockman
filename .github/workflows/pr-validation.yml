@@ -1,0 +1,140 @@
+name: PR Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  validate-pr:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Check PR title format
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            chore
+            ci
+          requireScope: false
+          disallowScopes: |
+            release
+          subjectPattern: ^(?![A-Z]).+$
+          subjectPatternError: |
+            The subject "{subject}" found in the pull request title "{title}"
+            didn't match the configured pattern. Please ensure that the subject
+            doesn't start with an uppercase character.
+
+      - name: Validate branch naming
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          if [[ ! "$BRANCH_NAME" =~ ^(feature|bugfix|hotfix|docs|chore)/.+ ]]; then
+            echo "Branch name '$BRANCH_NAME' does not follow the naming convention."
+            echo "Expected: feature/*, bugfix/*, hotfix/*, docs/*, or chore/*"
+            exit 1
+          fi
+
+      - name: Check for breaking changes
+        run: |
+          # Check if any files in core/ or cli/ have been modified
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          BREAKING_PATTERNS="trackit/core/|trackit/cli/main.py|trackit/db/models.py"
+
+          if echo "$CHANGED_FILES" | grep -E "$BREAKING_PATTERNS"; then
+            echo "::warning::This PR modifies core functionality. Please ensure backward compatibility."
+            echo "Changed files that may introduce breaking changes:"
+            echo "$CHANGED_FILES" | grep -E "$BREAKING_PATTERNS"
+          fi
+
+      - name: Check test coverage for new code
+        run: |
+          # Run tests with coverage for the current branch
+          pytest --cov=trackit --cov-report=xml --cov-fail-under=90
+
+          # Generate coverage report for comparison
+          coverage report --show-missing
+
+      - name: Lint only changed files
+        run: |
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '\.py$' | tr '\n' ' ')
+          if [ -n "$CHANGED_FILES" ]; then
+            echo "Linting changed files: $CHANGED_FILES"
+            flake8 $CHANGED_FILES
+            black --check --diff $CHANGED_FILES
+            isort --check-only --diff $CHANGED_FILES
+            mypy $CHANGED_FILES
+          else
+            echo "No Python files changed"
+          fi
+
+      - name: Check for TODO/FIXME comments
+        run: |
+          TODO_COUNT=$(git diff origin/${{ github.base_ref }}...HEAD | grep -c "^\+.*\(TODO\|FIXME\|XXX\)" || true)
+          if [ "$TODO_COUNT" -gt 0 ]; then
+            echo "::warning::This PR introduces $TODO_COUNT new TODO/FIXME comments"
+            git diff origin/${{ github.base_ref }}...HEAD | grep "^\+.*\(TODO\|FIXME\|XXX\)"
+          fi
+
+      - name: Size validation
+        run: |
+          LINES_CHANGED=$(git diff --stat origin/${{ github.base_ref }}...HEAD | tail -1 | grep -o '[0-9]\+ insertions\|[0-9]\+ deletions' | grep -o '[0-9]\+' | paste -sd+ | bc || echo 0)
+          if [ "$LINES_CHANGED" -gt 500 ]; then
+            echo "::warning::This PR changes $LINES_CHANGED lines. Consider breaking it into smaller PRs."
+          fi
+
+  auto-assign-reviewers:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Auto-assign reviewers
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // Auto-assign reviewers based on files changed
+            const { owner, repo, number } = context.issue;
+
+            const pr = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: number
+            });
+
+            const files = await github.rest.pulls.listFiles({
+              owner,
+              repo,
+              pull_number: number
+            });
+
+            const changedFiles = files.data.map(file => file.filename);
+            let reviewers = [];
+
+            // Add logic here to assign reviewers based on file patterns
+            // For now, we'll skip auto-assignment as we don't know the team structure
+
+            console.log('Changed files:', changedFiles);
+            console.log('Would assign reviewers:', reviewers);
