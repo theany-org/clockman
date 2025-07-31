@@ -15,10 +15,6 @@ permissions:
   security-events: write
   actions: read
 
-env:
-  # Check if Advanced Security is available
-  SECURITY_EVENTS_ENABLED: ${{ github.repository_owner != 'github' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
-
 jobs:
   dependency-security:
     name: Dependency Security Scan
@@ -122,7 +118,7 @@ jobs:
           fi
 
       - name: Upload Trivy secrets scan results
-        if: always() && steps.check-sarif.outputs.sarif-exists == 'true' && env.SECURITY_EVENTS_ENABLED == 'true'
+        if: always() && steps.check-sarif.outputs.sarif-exists == 'true' && github.repository_owner != 'github' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: "trivy-secrets.sarif"
@@ -172,7 +168,7 @@ jobs:
           fi
 
       - name: Upload Trivy scan results to GitHub Security tab
-        if: always() && steps.check-sarif.outputs.sarif-exists == 'true' && env.SECURITY_EVENTS_ENABLED == 'true'
+        if: always() && steps.check-sarif.outputs.sarif-exists == 'true' && github.repository_owner != 'github' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: "trivy-results.sarif"
@@ -229,7 +225,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     # Run this job when Advanced Security is not available
-    if: ${{ env.SECURITY_EVENTS_ENABLED != 'true' }}
+    if: ${{ github.repository_owner != 'github' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -289,7 +285,7 @@ jobs:
           echo "- ✅ Vulnerability assessment (trivy)" >> $GITHUB_STEP_SUMMARY
 
           # Check which static analysis was used
-          if [ "${{ env.SECURITY_EVENTS_ENABLED }}" == "true" ]; then
+          if [ "${{ github.repository_owner != 'github' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}" == "true" ]; then
             echo "- ✅ Static analysis (CodeQL)" >> $GITHUB_STEP_SUMMARY
           else
             echo "- ✅ Static analysis (Semgrep - CodeQL alternative)" >> $GITHUB_STEP_SUMMARY
