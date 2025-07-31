@@ -8,6 +8,7 @@ jobs:
   validate-pr:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: Checkout code
@@ -109,6 +110,7 @@ jobs:
   auto-assign-reviewers:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Auto-assign reviewers

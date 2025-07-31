@@ -24,6 +24,7 @@ jobs:
   validate-release:
     name: Validate Release
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     outputs:
       version: ${{ steps.version.outputs.version }}
       tag: ${{ steps.version.outputs.tag }}
@@ -91,6 +92,7 @@ jobs:
   build:
     name: Build Distribution
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: validate-release
     steps:
       - name: Checkout code
@@ -124,6 +126,7 @@ jobs:
   test-install:
     name: Test Installation
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
     needs: [validate-release, build]
     strategy:
       matrix:
@@ -159,6 +162,7 @@ jobs:
   create-release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [validate-release, build, test-install]
     steps:
       - name: Checkout code
@@ -219,6 +223,7 @@ jobs:
   publish-pypi:
     name: Publish to PyPI
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [validate-release, build, test-install, create-release]
     environment:
       name: pypi
@@ -239,6 +244,7 @@ jobs:
   publish-test-pypi:
     name: Publish to Test PyPI
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [validate-release, build, test-install]
     if: contains(needs.validate-release.outputs.version, '-') || github.event.inputs.prerelease == 'true'
     environment:
@@ -261,6 +267,7 @@ jobs:
   post-release:
     name: Post-release Tasks
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [validate-release, publish-pypi]
     if: always() && needs.publish-pypi.result == 'success'
     steps:
