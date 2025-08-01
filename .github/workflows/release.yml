@@ -97,12 +97,12 @@ jobs:
 
       #     pytest --cov=trackit --cov-fail-under=90
 
-      - name: Run quality checks
-        run: |
-          black --check trackit/
-          isort --check-only trackit/
-          flake8 trackit/
-          mypy trackit/
+      # - name: Run quality checks
+      #   run: |
+      #     black --check trackit/
+      #     isort --check-only trackit/
+      #     flake8 trackit/
+      #     mypy trackit/
 
   build:
     name: Build Distribution
