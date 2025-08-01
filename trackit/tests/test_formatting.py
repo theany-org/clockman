@@ -25,7 +25,7 @@ from trackit.utils.formatting import (
 class TestFormatDuration:
     """Test cases for format_duration function."""
 
-    def test_format_duration_hours_minutes_seconds(self):
+    def test_format_duration_hours_minutes_seconds(self) -> None:
         """Test formatting duration with hours, minutes, and seconds."""
         # Arrange
         duration = timedelta(hours=2, minutes=30, seconds=45)
@@ -36,7 +36,7 @@ class TestFormatDuration:
         # Assert
         assert result == "2h 30m 45s"
 
-    def test_format_duration_hours_minutes_no_seconds(self):
+    def test_format_duration_hours_minutes_no_seconds(self) -> None:
         """Test formatting duration without seconds."""
         # Arrange
         duration = timedelta(hours=1, minutes=45, seconds=30)
@@ -47,7 +47,7 @@ class TestFormatDuration:
         # Assert
         assert result == "1h 45m"
 
-    def test_format_duration_minutes_seconds(self):
+    def test_format_duration_minutes_seconds(self) -> None:
         """Test formatting duration with minutes and seconds only."""
         # Arrange
         duration = timedelta(minutes=25, seconds=15)
@@ -58,7 +58,7 @@ class TestFormatDuration:
         # Assert
         assert result == "25m 15s"
 
-    def test_format_duration_seconds_only(self):
+    def test_format_duration_seconds_only(self) -> None:
         """Test formatting duration with seconds only."""
         # Arrange
         duration = timedelta(seconds=42)
@@ -69,7 +69,7 @@ class TestFormatDuration:
         # Assert
         assert result == "42s"
 
-    def test_format_duration_zero_duration(self):
+    def test_format_duration_zero_duration(self) -> None:
         """Test formatting zero duration."""
         # Arrange
         duration = timedelta(0)
@@ -80,7 +80,7 @@ class TestFormatDuration:
         # Assert
         assert result == "0s"
 
-    def test_format_duration_zero_no_seconds(self):
+    def test_format_duration_zero_no_seconds(self) -> None:
         """Test formatting zero duration without seconds."""
         # Arrange
         duration = timedelta(0)
@@ -91,7 +91,7 @@ class TestFormatDuration:
         # Assert
         assert result == "0s"  # Should still show something
 
-    def test_format_duration_negative_duration(self):
+    def test_format_duration_negative_duration(self) -> None:
         """Test formatting negative duration."""
         # Arrange
         duration = timedelta(seconds=-30)
@@ -102,7 +102,7 @@ class TestFormatDuration:
         # Assert
         assert result == "0s"  # Should handle negative as zero
 
-    def test_format_duration_exact_hours(self):
+    def test_format_duration_exact_hours(self) -> None:
         """Test formatting exact hours."""
         # Arrange
         duration = timedelta(hours=3)
@@ -113,7 +113,7 @@ class TestFormatDuration:
         # Assert
         assert result == "3h"
 
-    def test_format_duration_exact_minutes(self):
+    def test_format_duration_exact_minutes(self) -> None:
         """Test formatting exact minutes."""
         # Arrange
         duration = timedelta(minutes=30)
@@ -124,7 +124,7 @@ class TestFormatDuration:
         # Assert
         assert result == "30m"
 
-    def test_format_duration_hours_seconds_no_minutes(self):
+    def test_format_duration_hours_seconds_no_minutes(self) -> None:
         """Test formatting duration with hours and seconds but no minutes."""
         # Arrange
         duration = timedelta(hours=1, seconds=30)
@@ -136,7 +136,7 @@ class TestFormatDuration:
         assert result == "1h 0m 30s"  # Should include minutes for clarity
 
     @patch("trackit.utils.formatting.get_config_manager")
-    def test_format_duration_uses_config_default(self, mock_get_config):
+    def test_format_duration_uses_config_default(self, mock_get_config) -> None:
         """Test that format_duration uses config default for show_seconds."""
         # Arrange
         mock_config = Mock()
@@ -152,7 +152,7 @@ class TestFormatDuration:
         assert result == "1h 30m"
         mock_config.show_seconds.assert_called_once()
 
-    def test_format_duration_large_values(self):
+    def test_format_duration_large_values(self) -> None:
         """Test formatting very large durations."""
         # Arrange
         duration = timedelta(hours=25, minutes=70, seconds=120)  # 26h 12m
@@ -167,7 +167,7 @@ class TestFormatDuration:
 class TestFormatDatetime:
     """Test cases for format_datetime function."""
 
-    def test_format_datetime_with_date_and_time(self):
+    def test_format_datetime_with_date_and_time(self) -> None:
         """Test formatting datetime with both date and time."""
         # Arrange
         dt = datetime(2024, 1, 15, 14, 30, 45, tzinfo=timezone.utc)
@@ -189,7 +189,7 @@ class TestFormatDatetime:
             )  # Depending on timezone
             assert ":" in result  # Should contain time
 
-    def test_format_datetime_date_only(self):
+    def test_format_datetime_date_only(self) -> None:
         """Test formatting datetime with date only."""
         # Arrange
         dt = datetime(2024, 1, 15, 14, 30, 45, tzinfo=timezone.utc)
@@ -208,7 +208,7 @@ class TestFormatDatetime:
             )  # Depending on timezone
             assert ":" not in result  # Should not contain time
 
-    def test_format_datetime_time_only(self):
+    def test_format_datetime_time_only(self) -> None:
         """Test formatting datetime with time only."""
         # Arrange
         dt = datetime(2024, 1, 15, 14, 30, 45, tzinfo=timezone.utc)
@@ -226,7 +226,7 @@ class TestFormatDatetime:
             assert ":" in result  # Should contain time
             assert "2024" not in result  # Should not contain date
 
-    def test_format_datetime_without_seconds(self):
+    def test_format_datetime_without_seconds(self) -> None:
         """Test formatting datetime without seconds."""
         # Arrange
         dt = datetime(2024, 1, 15, 14, 30, 45, tzinfo=timezone.utc)
@@ -244,7 +244,7 @@ class TestFormatDatetime:
             assert ":" in result
             assert result.count(":") == 1  # Only hours:minutes, no seconds
 
-    def test_format_datetime_naive_datetime(self):
+    def test_format_datetime_naive_datetime(self) -> None:
         """Test formatting naive datetime (assumes UTC)."""
         # Arrange
         dt = datetime(2024, 1, 15, 14, 30, 45)  # No timezone
@@ -263,7 +263,7 @@ class TestFormatDatetime:
             assert isinstance(result, str)
             assert len(result) > 0
 
-    def test_format_datetime_custom_formats(self):
+    def test_format_datetime_custom_formats(self) -> None:
         """Test formatting with custom date and time formats."""
         # Arrange
         dt = datetime(2024, 1, 15, 14, 30, 45, tzinfo=timezone.utc)
@@ -287,7 +287,7 @@ class TestFormatDatetime:
 class TestFormatDateAndTime:
     """Test cases for format_date and format_time functions."""
 
-    def test_format_date(self):
+    def test_format_date(self) -> None:
         """Test format_date function."""
         # Arrange
         dt = datetime(2024, 1, 15, 14, 30, 45, tzinfo=timezone.utc)
@@ -299,7 +299,7 @@ class TestFormatDateAndTime:
         assert "2024" in result
         assert ":" not in result
 
-    def test_format_time(self):
+    def test_format_time(self) -> None:
         """Test format_time function."""
         # Arrange
         dt = datetime(2024, 1, 15, 14, 30, 45, tzinfo=timezone.utc)
@@ -315,7 +315,7 @@ class TestFormatDateAndTime:
 class TestTruncateText:
     """Test cases for truncate_text function."""
 
-    def test_truncate_text_within_limit(self):
+    def test_truncate_text_within_limit(self) -> None:
         """Test truncating text within the limit."""
         # Arrange
         text = "Short text"
@@ -326,7 +326,7 @@ class TestTruncateText:
         # Assert
         assert result == "Short text"
 
-    def test_truncate_text_exceeds_limit(self):
+    def test_truncate_text_exceeds_limit(self) -> None:
         """Test truncating text that exceeds the limit."""
         # Arrange
         text = "This is a very long text that exceeds the maximum length"
@@ -339,7 +339,7 @@ class TestTruncateText:
         assert result.endswith("...")
         assert result == "This is a very lo..."
 
-    def test_truncate_text_exact_limit(self):
+    def test_truncate_text_exact_limit(self) -> None:
         """Test truncating text that is exactly at the limit."""
         # Arrange
         text = "Exactly twenty chars"  # 20 characters
@@ -350,7 +350,7 @@ class TestTruncateText:
         # Assert
         assert result == "Exactly twenty chars"
 
-    def test_truncate_text_very_short_limit(self):
+    def test_truncate_text_very_short_limit(self) -> None:
         """Test truncating with very short limit."""
         # Arrange
         text = "Long text"
@@ -362,7 +362,7 @@ class TestTruncateText:
         assert len(result) == 5
         assert result == "Lo..."
 
-    def test_truncate_text_limit_less_than_ellipsis(self):
+    def test_truncate_text_limit_less_than_ellipsis(self) -> None:
         """Test truncating with limit less than ellipsis length."""
         # Arrange
         text = "Text"
@@ -375,7 +375,7 @@ class TestTruncateText:
         assert result == "..."[:2]
 
     @patch("trackit.utils.formatting.get_config_manager")
-    def test_truncate_text_uses_config_default(self, mock_get_config):
+    def test_truncate_text_uses_config_default(self, mock_get_config) -> None:
         """Test that truncate_text uses config default for max_length."""
         # Arrange
         mock_config = Mock()
@@ -396,7 +396,7 @@ class TestTruncateText:
 class TestFormatBytes:
     """Test cases for format_bytes function."""
 
-    def test_format_bytes_bytes(self):
+    def test_format_bytes_bytes(self) -> None:
         """Test formatting bytes."""
         # Act & Assert
         assert format_bytes(0) == "0 B"
@@ -404,33 +404,33 @@ class TestFormatBytes:
         assert format_bytes(512) == "512 B"
         assert format_bytes(1023) == "1023 B"
 
-    def test_format_bytes_kilobytes(self):
+    def test_format_bytes_kilobytes(self) -> None:
         """Test formatting kilobytes."""
         # Act & Assert
         assert format_bytes(1024) == "1.0 KB"
         assert format_bytes(1536) == "1.5 KB"
         assert format_bytes(2048) == "2.0 KB"
 
-    def test_format_bytes_megabytes(self):
+    def test_format_bytes_megabytes(self) -> None:
         """Test formatting megabytes."""
         # Act & Assert
         assert format_bytes(1024 * 1024) == "1.0 MB"
         assert format_bytes(1024 * 1024 * 1) == "1.0 MB"
         assert format_bytes(1024 * 1024 * 10) == "10.0 MB"
 
-    def test_format_bytes_gigabytes(self):
+    def test_format_bytes_gigabytes(self) -> None:
         """Test formatting gigabytes."""
         # Act & Assert
         assert format_bytes(1024 * 1024 * 1024) == "1.0 GB"
         assert format_bytes(1024 * 1024 * 1024 * 2) == "2.0 GB"
 
-    def test_format_bytes_terabytes(self):
+    def test_format_bytes_terabytes(self) -> None:
         """Test formatting terabytes."""
         # Act & Assert
         assert format_bytes(1024 * 1024 * 1024 * 1024) == "1.0 TB"
         assert format_bytes(1024 * 1024 * 1024 * 1024 * 5) == "5.0 TB"
 
-    def test_format_bytes_large_values(self):
+    def test_format_bytes_large_values(self) -> None:
         """Test formatting very large byte values."""
         # Arrange
         very_large = 1024**4 * 1000  # 1000 TB
@@ -446,7 +446,7 @@ class TestFormatBytes:
 class TestFormatPercentage:
     """Test cases for format_percentage function."""
 
-    def test_format_percentage_normal_values(self):
+    def test_format_percentage_normal_values(self) -> None:
         """Test formatting normal percentage values."""
         # Act & Assert
         assert format_percentage(25, 100) == "25.0%"
@@ -454,28 +454,28 @@ class TestFormatPercentage:
         assert format_percentage(75, 100) == "75.0%"
         assert format_percentage(100, 100) == "100.0%"
 
-    def test_format_percentage_zero_value(self):
+    def test_format_percentage_zero_value(self) -> None:
         """Test formatting zero percentage."""
         # Act & Assert
         assert format_percentage(0, 100) == "0.0%"
 
-    def test_format_percentage_zero_total(self):
+    def test_format_percentage_zero_total(self) -> None:
         """Test formatting percentage with zero total."""
         # Act & Assert
         assert format_percentage(50, 0) == "0.0%"
 
-    def test_format_percentage_decimal_values(self):
+    def test_format_percentage_decimal_values(self) -> None:
         """Test formatting decimal percentage values."""
         # Act & Assert
         assert format_percentage(33.333, 100) == "33.3%"
         assert format_percentage(66.666, 100) == "66.7%"
 
-    def test_format_percentage_greater_than_total(self):
+    def test_format_percentage_greater_than_total(self) -> None:
         """Test formatting percentage greater than 100%."""
         # Act & Assert
         assert format_percentage(150, 100) == "150.0%"
 
-    def test_format_percentage_fractional_total(self):
+    def test_format_percentage_fractional_total(self) -> None:
         """Test formatting percentage with fractional total."""
         # Act & Assert
         assert format_percentage(1, 3) == "33.3%"
@@ -485,21 +485,21 @@ class TestFormatPercentage:
 class TestPluralize:
     """Test cases for pluralize function."""
 
-    def test_pluralize_singular(self):
+    def test_pluralize_singular(self) -> None:
         """Test pluralization with singular count."""
         # Act & Assert
         assert pluralize(1, "item") == "item"
         assert pluralize(1, "task") == "task"
         assert pluralize(1, "entry") == "entry"
 
-    def test_pluralize_plural(self):
+    def test_pluralize_plural(self) -> None:
         """Test pluralization with plural count."""
         # Act & Assert
         assert pluralize(0, "item") == "items"
         assert pluralize(2, "task") == "tasks"
         assert pluralize(10, "entry") == "entries"
 
-    def test_pluralize_custom_plural(self):
+    def test_pluralize_custom_plural(self) -> None:
         """Test pluralization with custom plural form."""
         # Act & Assert
         assert pluralize(1, "child", "children") == "child"
@@ -507,7 +507,7 @@ class TestPluralize:
         assert pluralize(0, "person", "people") == "people"
         assert pluralize(1, "person", "people") == "person"
 
-    def test_pluralize_irregular_words(self):
+    def test_pluralize_irregular_words(self) -> None:
         """Test pluralization with irregular words."""
         # Act & Assert
         assert pluralize(1, "mouse", "mice") == "mouse"
@@ -515,7 +515,7 @@ class TestPluralize:
         assert pluralize(1, "foot", "feet") == "foot"
         assert pluralize(2, "foot", "feet") == "feet"
 
-    def test_pluralize_negative_count(self):
+    def test_pluralize_negative_count(self) -> None:
         """Test pluralization with negative count."""
         # Act & Assert
         assert pluralize(-1, "item") == "item"  # Singular for -1
@@ -525,7 +525,7 @@ class TestPluralize:
 class TestFormatRelativeTime:
     """Test cases for format_relative_time function."""
 
-    def test_format_relative_time_just_now(self):
+    def test_format_relative_time_just_now(self) -> None:
         """Test formatting time that's very recent."""
         # Arrange
         now = datetime.now(timezone.utc)
@@ -537,7 +537,7 @@ class TestFormatRelativeTime:
         # Assert
         assert result == "just now"
 
-    def test_format_relative_time_minutes_ago(self):
+    def test_format_relative_time_minutes_ago(self) -> None:
         """Test formatting time in minutes ago."""
         # Arrange
         now = datetime.now(timezone.utc)
@@ -549,7 +549,7 @@ class TestFormatRelativeTime:
         # Assert
         assert result == "5 minutes ago"
 
-    def test_format_relative_time_one_minute_ago(self):
+    def test_format_relative_time_one_minute_ago(self) -> None:
         """Test formatting one minute ago (singular)."""
         # Arrange
         now = datetime.now(timezone.utc)
@@ -561,7 +561,7 @@ class TestFormatRelativeTime:
         # Assert
         assert result == "1 minute ago"
 
-    def test_format_relative_time_hours_ago(self):
+    def test_format_relative_time_hours_ago(self) -> None:
         """Test formatting time in hours ago."""
         # Arrange
         now = datetime.now(timezone.utc)
@@ -573,7 +573,7 @@ class TestFormatRelativeTime:
         # Assert
         assert result == "3 hours ago"
 
-    def test_format_relative_time_one_hour_ago(self):
+    def test_format_relative_time_one_hour_ago(self) -> None:
         """Test formatting one hour ago (singular)."""
         # Arrange
         now = datetime.now(timezone.utc)
@@ -585,7 +585,7 @@ class TestFormatRelativeTime:
         # Assert
         assert result == "1 hour ago"
 
-    def test_format_relative_time_days_ago(self):
+    def test_format_relative_time_days_ago(self) -> None:
         """Test formatting time in days ago."""
         # Arrange
         now = datetime.now(timezone.utc)
@@ -597,7 +597,7 @@ class TestFormatRelativeTime:
         # Assert
         assert result == "2 days ago"
 
-    def test_format_relative_time_one_day_ago(self):
+    def test_format_relative_time_one_day_ago(self) -> None:
         """Test formatting one day ago (singular)."""
         # Arrange
         now = datetime.now(timezone.utc)
@@ -609,7 +609,7 @@ class TestFormatRelativeTime:
         # Assert
         assert result == "1 day ago"
 
-    def test_format_relative_time_future_minutes(self):
+    def test_format_relative_time_future_minutes(self) -> None:
         """Test formatting future time in minutes."""
         # Arrange
         now = datetime.now(timezone.utc)
@@ -621,7 +621,7 @@ class TestFormatRelativeTime:
         # Assert
         assert result == "in 10 minutes"
 
-    def test_format_relative_time_future_hours(self):
+    def test_format_relative_time_future_hours(self) -> None:
         """Test formatting future time in hours."""
         # Arrange
         now = datetime.now(timezone.utc)
@@ -633,7 +633,7 @@ class TestFormatRelativeTime:
         # Assert
         assert result == "in 2 hours"
 
-    def test_format_relative_time_future_days(self):
+    def test_format_relative_time_future_days(self) -> None:
         """Test formatting future time in days."""
         # Arrange
         now = datetime.now(timezone.utc)
@@ -645,7 +645,7 @@ class TestFormatRelativeTime:
         # Assert
         assert result == "in 5 days"
 
-    def test_format_relative_time_naive_datetime(self):
+    def test_format_relative_time_naive_datetime(self) -> None:
         """Test formatting relative time with naive datetime."""
         # Arrange
         now = datetime.now()  # Naive datetime
@@ -663,7 +663,7 @@ class TestFormatRelativeTime:
 class TestFormattingEdgeCases:
     """Test edge cases and error conditions for formatting functions."""
 
-    def test_format_duration_microseconds(self):
+    def test_format_duration_microseconds(self) -> None:
         """Test formatting duration with microseconds."""
         # Arrange
         duration = timedelta(microseconds=500000)  # 0.5 seconds
@@ -674,7 +674,7 @@ class TestFormattingEdgeCases:
         # Assert
         assert result == "0s"  # Should round down
 
-    def test_format_datetime_empty_string_formats(self):
+    def test_format_datetime_empty_string_formats(self) -> None:
         """Test datetime formatting with empty format strings."""
         # Arrange
         dt = datetime(2024, 1, 15, 14, 30, 45, tzinfo=timezone.utc)
@@ -692,13 +692,13 @@ class TestFormattingEdgeCases:
             # Assert - should handle gracefully
             assert isinstance(result, str)
 
-    def test_truncate_text_empty_string(self):
+    def test_truncate_text_empty_string(self) -> None:
         """Test truncating empty string."""
         # Act & Assert
         assert truncate_text("", max_length=10) == ""
         assert truncate_text("", max_length=0) == ""
 
-    def test_format_bytes_negative_values(self):
+    def test_format_bytes_negative_values(self) -> None:
         """Test formatting negative byte values."""
         # Act - should handle gracefully (though not typical use case)
         result = format_bytes(-1024)
@@ -707,13 +707,13 @@ class TestFormattingEdgeCases:
         assert isinstance(result, str)
         # Implementation may vary for negative values
 
-    def test_format_percentage_negative_values(self):
+    def test_format_percentage_negative_values(self) -> None:
         """Test formatting negative percentage values."""
         # Act & Assert
         assert format_percentage(-25, 100) == "-25.0%"
         assert format_percentage(25, -100) == "-25.0%"
 
-    def test_pluralize_float_count(self):
+    def test_pluralize_float_count(self) -> None:
         """Test pluralization with float count."""
         # Act & Assert
         assert pluralize(1, "item") == "item"
@@ -725,7 +725,7 @@ class TestFormattingEdgeCases:
 class TestFormattingIntegration:
     """Integration tests for formatting functions."""
 
-    def test_duration_and_relative_time_consistency(self):
+    def test_duration_and_relative_time_consistency(self) -> None:
         """Test consistency between duration and relative time formatting."""
         # Arrange
         base_time = datetime.now(timezone.utc)
@@ -741,7 +741,7 @@ class TestFormattingIntegration:
         assert "30m" in duration_str
         assert "hours" in relative_str or "hour" in relative_str
 
-    def test_datetime_formatting_with_config_integration(self):
+    def test_datetime_formatting_with_config_integration(self) -> None:
         """Test datetime formatting integrates properly with config."""
         # Arrange
         dt = datetime(2024, 6, 15, 14, 30, 45, tzinfo=timezone.utc)
@@ -765,7 +765,7 @@ class TestFormattingIntegration:
             assert isinstance(time_result, str)
             assert isinstance(datetime_result, str)
 
-    def test_text_truncation_with_config_integration(self):
+    def test_text_truncation_with_config_integration(self) -> None:
         """Test text truncation integrates with config settings."""
         # Arrange
         long_text = "This is a very long task name that exceeds normal limits"
@@ -783,7 +783,7 @@ class TestFormattingIntegration:
             assert result.endswith("...")
             mock_config.get_max_task_name_length.assert_called_once()
 
-    def test_comprehensive_formatting_workflow(self):
+    def test_comprehensive_formatting_workflow(self) -> None:
         """Test a comprehensive formatting workflow."""
         # Arrange
         start_time = datetime(2024, 1, 1, 9, 0, 0, tzinfo=timezone.utc)

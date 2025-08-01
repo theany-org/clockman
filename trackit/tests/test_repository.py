@@ -12,14 +12,12 @@ from uuid import uuid4
 import pytest
 
 from trackit.db.models import DailyStats, ProjectStats, TimeSession
-from trackit.db.repository import SessionRepository
-from trackit.db.schema import DatabaseManager
 
 
 class TestSessionRepository:
     """Test cases for SessionRepository class."""
 
-    def test_create_session(self, session_repository):
+    def test_create_session(self, session_repository) -> None:
         """Test creating a new session."""
         # Arrange
         session = TimeSession(
@@ -47,7 +45,7 @@ class TestSessionRepository:
         assert retrieved.is_active is True
         assert retrieved.metadata == {"test": True}
 
-    def test_create_session_with_completed_session(self, session_repository):
+    def test_create_session_with_completed_session(self, session_repository) -> None:
         """Test creating a completed session."""
         # Arrange
         start_time = datetime(2024, 1, 1, 9, 0, 0, tzinfo=timezone.utc)
@@ -68,7 +66,7 @@ class TestSessionRepository:
         assert created_session.is_active is False
         assert created_session.end_time == end_time
 
-    def test_get_session_by_id_exists(self, session_repository):
+    def test_get_session_by_id_exists(self, session_repository) -> None:
         """Test getting session by ID when it exists."""
         # Arrange
         session = TimeSession(
@@ -84,7 +82,7 @@ class TestSessionRepository:
         assert retrieved.id == session.id
         assert retrieved.task_name == "Test Task"
 
-    def test_get_session_by_id_not_exists(self, session_repository):
+    def test_get_session_by_id_not_exists(self, session_repository) -> None:
         """Test getting session by ID when it doesn't exist."""
         # Arrange
         non_existent_id = uuid4()
@@ -95,7 +93,7 @@ class TestSessionRepository:
         # Assert
         assert retrieved is None
 
-    def test_get_active_session_with_active(self, session_repository):
+    def test_get_active_session_with_active(self, session_repository) -> None:
         """Test getting active session when one exists."""
         # Arrange
         active_session = TimeSession(
@@ -123,7 +121,7 @@ class TestSessionRepository:
         assert retrieved.id == active_session.id
         assert retrieved.is_active is True
 
-    def test_get_active_session_with_none_active(self, session_repository):
+    def test_get_active_session_with_none_active(self, session_repository) -> None:
         """Test getting active session when none exists."""
         # Arrange - create only inactive sessions
         inactive_session = TimeSession(
@@ -140,7 +138,7 @@ class TestSessionRepository:
         # Assert
         assert retrieved is None
 
-    def test_get_active_session_returns_most_recent(self, session_repository):
+    def test_get_active_session_returns_most_recent(self, session_repository) -> None:
         """Test that get_active_session returns most recent when multiple active."""
         # Arrange - create multiple active sessions (shouldn't happen in practice)
         earlier_session = TimeSession(
@@ -169,7 +167,7 @@ class TestSessionRepository:
         assert retrieved.id == later_session.id
         assert retrieved.task_name == "Later Active"
 
-    def test_update_session(self, session_repository):
+    def test_update_session(self, session_repository) -> None:
         """Test updating an existing session."""
         # Arrange
         session = TimeSession(
@@ -204,7 +202,7 @@ class TestSessionRepository:
         assert retrieved.end_time is not None
         assert retrieved.metadata == {"updated": True}
 
-    def test_delete_session_exists(self, session_repository):
+    def test_delete_session_exists(self, session_repository) -> None:
         """Test deleting a session that exists."""
         # Arrange
         session = TimeSession(
@@ -222,7 +220,7 @@ class TestSessionRepository:
         assert result is True
         assert session_repository.get_session_by_id(session.id) is None
 
-    def test_delete_session_not_exists(self, session_repository):
+    def test_delete_session_not_exists(self, session_repository) -> None:
         """Test deleting a session that doesn't exist."""
         # Arrange
         non_existent_id = uuid4()
@@ -233,7 +231,7 @@ class TestSessionRepository:
         # Assert
         assert result is False
 
-    def test_get_sessions_for_date(self, session_repository):
+    def test_get_sessions_for_date(self, session_repository) -> None:
         """Test getting sessions for a specific date."""
         # Arrange
         target_date = date(2024, 1, 1)
@@ -276,7 +274,7 @@ class TestSessionRepository:
         # Should be ordered by start time
         assert sessions[0].start_time <= sessions[1].start_time
 
-    def test_get_sessions_for_date_empty(self, session_repository):
+    def test_get_sessions_for_date_empty(self, session_repository) -> None:
         """Test getting sessions for date with no sessions."""
         # Arrange
         target_date = date(2024, 1, 1)
@@ -287,7 +285,7 @@ class TestSessionRepository:
         # Assert
         assert sessions == []
 
-    def test_get_sessions_in_range(self, session_repository):
+    def test_get_sessions_in_range(self, session_repository) -> None:
         """Test getting sessions within a date range."""
         # Arrange
         start_date = date(2024, 1, 1)
@@ -323,7 +321,7 @@ class TestSessionRepository:
         assert "Task 3" in task_names
         assert "Task 4" not in task_names
 
-    def test_get_recent_sessions(self, session_repository):
+    def test_get_recent_sessions(self, session_repository) -> None:
         """Test getting recent sessions with limit."""
         # Arrange
         sessions_data = []
@@ -351,7 +349,7 @@ class TestSessionRepository:
         assert recent_sessions[1].task_name == "Task 4"
         assert recent_sessions[2].task_name == "Task 3"
 
-    def test_get_recent_sessions_no_limit(self, session_repository):
+    def test_get_recent_sessions_no_limit(self, session_repository) -> None:
         """Test getting recent sessions with default limit."""
         # Arrange
         for i in range(15):  # More than default limit
@@ -370,7 +368,7 @@ class TestSessionRepository:
         # Assert
         assert len(recent_sessions) == 10  # Default limit
 
-    def test_get_sessions_by_task(self, session_repository):
+    def test_get_sessions_by_task(self, session_repository) -> None:
         """Test getting sessions by task name."""
         # Arrange
         task_name = "Project Alpha"
@@ -410,7 +408,7 @@ class TestSessionRepository:
         # Should be ordered by start time descending
         assert sessions[0].start_time > sessions[1].start_time
 
-    def test_get_sessions_by_task_case_sensitive(self, session_repository):
+    def test_get_sessions_by_task_case_sensitive(self, session_repository) -> None:
         """Test that task name search is case sensitive."""
         # Arrange
         session1 = TimeSession(
@@ -430,7 +428,7 @@ class TestSessionRepository:
         assert len(sessions) == 1
         assert sessions[0].task_name == "Task"
 
-    def test_get_sessions_by_tag(self, session_repository):
+    def test_get_sessions_by_tag(self, session_repository) -> None:
         """Test getting sessions by tag."""
         # Arrange
         sessions_data = [
@@ -460,7 +458,7 @@ class TestSessionRepository:
         assert "Task 4" in task_names
         assert "Task 3" not in task_names
 
-    def test_get_sessions_by_tag_case_insensitive(self, session_repository):
+    def test_get_sessions_by_tag_case_insensitive(self, session_repository) -> None:
         """Test that tag search is case insensitive."""
         # Arrange
         session = TimeSession(
@@ -481,7 +479,9 @@ class TestSessionRepository:
         assert sessions_dev[0].task_name == "Task"
         assert sessions_test[0].task_name == "Task"
 
-    def test_get_sessions_by_tag_partial_match_prevention(self, session_repository):
+    def test_get_sessions_by_tag_partial_match_prevention(
+        self, session_repository
+    ) -> None:
         """Test that tag search doesn't match partial tags."""
         # Arrange
         session = TimeSession(
@@ -498,7 +498,7 @@ class TestSessionRepository:
         # Assert
         assert len(sessions) == 0  # Should not match partial
 
-    def test_get_daily_stats(self, session_repository):
+    def test_get_daily_stats(self, session_repository) -> None:
         """Test getting daily statistics."""
         # Arrange
         target_date = date(2024, 1, 1)
@@ -549,7 +549,7 @@ class TestSessionRepository:
         assert "dev" in stats.most_used_tags
         assert len(stats.most_used_tags) <= 5
 
-    def test_get_daily_stats_no_sessions(self, session_repository):
+    def test_get_daily_stats_no_sessions(self, session_repository) -> None:
         """Test getting daily stats for date with no sessions."""
         # Arrange
         target_date = date(2024, 1, 1)
@@ -565,7 +565,7 @@ class TestSessionRepository:
         assert stats.most_used_tags == []
         assert stats.longest_session is None
 
-    def test_get_project_stats(self, session_repository):
+    def test_get_project_stats(self, session_repository) -> None:
         """Test getting project statistics."""
         # Arrange
         task_name = "Project Alpha"
@@ -612,7 +612,7 @@ class TestSessionRepository:
         assert stats.last_session is not None
         assert stats.first_session <= stats.last_session
 
-    def test_get_project_stats_no_completed_sessions(self, session_repository):
+    def test_get_project_stats_no_completed_sessions(self, session_repository) -> None:
         """Test getting project stats with no completed sessions."""
         # Arrange
         task_name = "Empty Project"
@@ -638,7 +638,7 @@ class TestSessionRepository:
         assert stats.first_session is None
         assert stats.last_session is None
 
-    def test_get_project_stats_nonexistent_task(self, session_repository):
+    def test_get_project_stats_nonexistent_task(self, session_repository) -> None:
         """Test getting project stats for non-existent task."""
         # Act
         stats = session_repository.get_project_stats("Nonexistent Task")
@@ -652,7 +652,7 @@ class TestSessionRepository:
         assert stats.first_session is None
         assert stats.last_session is None
 
-    def test_row_to_session_conversion(self, session_repository):
+    def test_row_to_session_conversion(self, session_repository) -> None:
         """Test internal _row_to_session method functionality."""
         # Arrange
         session_id = uuid4()
@@ -690,7 +690,7 @@ class TestSessionRepository:
 class TestSessionRepositoryIntegration:
     """Integration tests for SessionRepository with database."""
 
-    def test_complete_crud_workflow(self, session_repository):
+    def test_complete_crud_workflow(self, session_repository) -> None:
         """Test complete CRUD workflow."""
         # Create
         session = TimeSession(
@@ -730,7 +730,7 @@ class TestSessionRepositoryIntegration:
         final_check = session_repository.get_session_by_id(session.id)
         assert final_check is None
 
-    def test_concurrent_session_handling(self, session_repository):
+    def test_concurrent_session_handling(self, session_repository) -> None:
         """Test handling multiple sessions concurrently."""
         sessions = []
 
@@ -763,7 +763,7 @@ class TestSessionRepositoryIntegration:
         remaining_sessions = session_repository.get_sessions_by_tag("concurrent")
         assert len(remaining_sessions) == 0
 
-    def test_database_consistency_after_operations(self, session_repository):
+    def test_database_consistency_after_operations(self, session_repository) -> None:
         """Test database consistency after various operations."""
         # Create several sessions with overlapping data
         sessions_data = [

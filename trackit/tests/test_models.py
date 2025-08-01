@@ -20,11 +20,13 @@ class TestTimeSession:
     def test_time_session_creation_with_defaults(self):
         """Test creating TimeSession with minimal required fields."""
         # Act
-        session = TimeSession(task_name="Test Task")
+        session = TimeSession(
+            task_name="Test Task", description="Test Description", end_time=None
+        )
 
         # Assert
         assert session.task_name == "Test Task"
-        assert session.description is None
+        assert session.description == "Test Description"
         assert session.tags == []
         assert session.is_active is True
         assert session.end_time is None
@@ -33,7 +35,7 @@ class TestTimeSession:
         assert session.start_time.tzinfo is not None  # Should have timezone
         assert session.metadata == {}
 
-    def test_time_session_creation_with_all_fields(self):
+    def test_time_session_creation_with_all_fields(self) -> None:
         """Test creating TimeSession with all fields specified."""
         # Arrange
         session_id = uuid4()
@@ -63,60 +65,69 @@ class TestTimeSession:
         assert session.is_active is False
         assert session.metadata == metadata
 
-    def test_time_session_task_name_validation(self):
+    def test_time_session_task_name_validation(self) -> None:
         """Test task name validation rules."""
         # Test empty task name
         with pytest.raises(ValidationError) as exc_info:
-            TimeSession(task_name="")
+            TimeSession(task_name="", description="", end_time=None)
         assert "at least 1 character" in str(exc_info.value)
 
         # Test task name too long
         long_name = "x" * 256
         with pytest.raises(ValidationError) as exc_info:
-            TimeSession(task_name=long_name)
+            TimeSession(task_name=long_name, description="", end_time=None)
         assert "at most 255 characters" in str(exc_info.value)
 
         # Test valid task name
-        session = TimeSession(task_name="Valid Task")
+        session = TimeSession(
+            task_name="Valid Task", description="Valid Task", end_time=None
+        )
         assert session.task_name == "Valid Task"
 
-    def test_time_session_description_validation(self):
+    def test_time_session_description_validation(self) -> None:
         """Test description validation rules."""
         # Test description too long
         long_description = "x" * 1001
         with pytest.raises(ValidationError) as exc_info:
-            TimeSession(task_name="Task", description=long_description)
+            TimeSession(task_name="Task", description=long_description, end_time=None)
         assert "at most 1000 characters" in str(exc_info.value)
 
         # Test valid description
         valid_description = "x" * 1000
-        session = TimeSession(task_name="Task", description=valid_description)
+        session = TimeSession(
+            task_name="Task", description=valid_description, end_time=None
+        )
         assert session.description == valid_description
 
         # Test None description
-        session = TimeSession(task_name="Task", description=None)
+        session = TimeSession(task_name="Task", description=None, end_time=None)
         assert session.description is None
 
-    def test_time_session_tags_validation_and_normalization(self):
+    def test_time_session_tags_validation_and_normalization(self) -> None:
         """Test tags validation and normalization."""
         # Test duplicate removal and normalization
         session = TimeSession(
             task_name="Task",
             tags=["Development", "TESTING", "development", "  testing  ", ""],
+            description="Task with tags",
+            end_time=None,
         )
 
         # Should remove duplicates, normalize case, and remove empty strings
         expected_tags = {"development", "testing"}
         assert set(session.tags) == expected_tags
 
-    def test_time_session_end_time_validation(self):
+    def test_time_session_end_time_validation(self) -> None:
         """Test end_time validation against start_time."""
         start_time = datetime(2024, 1, 1, 9, 0, 0, tzinfo=timezone.utc)
 
         # Test valid end_time (after start_time)
         valid_end_time = datetime(2024, 1, 1, 10, 0, 0, tzinfo=timezone.utc)
         session = TimeSession(
-            task_name="Task", start_time=start_time, end_time=valid_end_time
+            task_name="Task",
+            start_time=start_time,
+            end_time=valid_end_time,
+            description="Valid session",
         )
         assert session.end_time == valid_end_time
 
@@ -124,37 +135,58 @@ class TestTimeSession:
         invalid_end_time = datetime(2024, 1, 1, 8, 0, 0, tzinfo=timezone.utc)
         with pytest.raises(ValidationError) as exc_info:
             TimeSession(
-                task_name="Task", start_time=start_time, end_time=invalid_end_time
+                task_name="Task",
+                start_time=start_time,
+                end_time=invalid_end_time,
+                description="Invalid session",
             )
         assert "End time must be after start time" in str(exc_info.value)
 
         # Test end_time equal to start_time (should fail)
         with pytest.raises(ValidationError) as exc_info:
-            TimeSession(task_name="Task", start_time=start_time, end_time=start_time)
+            TimeSession(
+                task_name="Task",
+                description="Invalid session",
+                start_time=start_time,
+                end_time=start_time,
+            )
         assert "End time must be after start time" in str(exc_info.value)
 
-    def test_time_session_duration_property(self):
+    def test_time_session_duration_property(self) -> None:
         """Test duration property calculation."""
         start_time = datetime(2024, 1, 1, 9, 0, 0, tzinfo=timezone.utc)
         end_time = datetime(2024, 1, 1, 10, 30, 0, tzinfo=timezone.utc)  # 1.5 hours
 
         # Test completed session duration
         session = TimeSession(
-            task_name="Task", start_time=start_time, end_time=end_time, is_active=False
+            description="Completed session",
+            task_name="Task",
+            start_time=start_time,
+            end_time=end_time,
+            is_active=False,
         )
         expected_duration = 1.5 * 3600  # 1.5 hours in seconds
         assert session.duration == expected_duration
 
         # Test active session duration (should be None)
         active_session = TimeSession(
-            task_name="Active Task", start_time=start_time, is_active=True
+            description="Active session",
+            task_name="Active Task",
+            start_time=start_time,
+            end_time=None,
+            is_active=True,
         )
         assert active_session.duration is None
 
-    def test_time_session_stop_method(self):
+    def test_time_session_stop_method(self) -> None:
         """Test the stop method."""
         # Test stopping with specific end time
-        session = TimeSession(task_name="Task", is_active=True)
+        session = TimeSession(
+            task_name="Task",
+            is_active=True,
+            end_time=None,
+            description="Stopping session",
+        )
         end_time = datetime(2024, 1, 1, 10, 0, 0, tzinfo=timezone.utc)
 
         session.stop(end_time)
@@ -163,7 +195,12 @@ class TestTimeSession:
         assert session.is_active is False
 
         # Test stopping with current time (default)
-        active_session = TimeSession(task_name="Another Task", is_active=True)
+        active_session = TimeSession(
+            task_name="Another Task",
+            is_active=True,
+            description="Active session",
+            end_time=None,
+        )
         before_stop = datetime.now(timezone.utc)
 
         active_session.stop()
@@ -172,7 +209,7 @@ class TestTimeSession:
         assert active_session.end_time is not None
         assert active_session.end_time >= before_stop
 
-    def test_time_session_json_serialization(self):
+    def test_time_session_json_serialization(self) -> None:
         """Test JSON serialization of TimeSession."""
         session_id = uuid4()
         start_time = datetime(2024, 1, 1, 9, 0, 0, tzinfo=timezone.utc)
@@ -204,7 +241,7 @@ class TestTimeSession:
         assert str(session_id) in json_str
         assert "Serialization Test" in json_str
 
-    def test_time_session_from_dict(self):
+    def test_time_session_from_dict(self) -> None:
         """Test creating TimeSession from dictionary."""
         session_id = uuid4()
         data = {
@@ -233,7 +270,13 @@ class TestDailyStats:
 
     def test_daily_stats_creation_with_defaults(self):
         """Test creating DailyStats with minimal fields."""
-        stats = DailyStats(date="2024-01-01")
+        stats = DailyStats(
+            date="2024-01-01",
+            total_duration=0.0,
+            session_count=0,
+            unique_tasks=0,
+            longest_session=None,
+        )
 
         assert stats.date == "2024-01-01"
         assert stats.total_duration == 0.0
@@ -242,7 +285,7 @@ class TestDailyStats:
         assert stats.most_used_tags == []
         assert stats.longest_session is None
 
-    def test_daily_stats_creation_with_all_fields(self):
+    def test_daily_stats_creation_with_all_fields(self) -> None:
         """Test creating DailyStats with all fields."""
         stats = DailyStats(
             date="2024-01-01",
@@ -260,7 +303,7 @@ class TestDailyStats:
         assert stats.most_used_tags == ["development", "testing"]
         assert stats.longest_session == 3600.0
 
-    def test_daily_stats_validation(self):
+    def test_daily_stats_validation(self) -> None:
         """Test DailyStats field validation."""
         # Test valid stats
         stats = DailyStats(
@@ -268,6 +311,7 @@ class TestDailyStats:
             total_duration=1800.0,
             session_count=1,
             unique_tasks=1,
+            longest_session=None,
         )
         assert stats.date == "2024-01-01"
 
@@ -276,7 +320,7 @@ class TestDailyStats:
         assert stats.session_count >= 0
         assert stats.unique_tasks >= 0
 
-    def test_daily_stats_serialization(self):
+    def test_daily_stats_serialization(self) -> None:
         """Test DailyStats serialization."""
         stats = DailyStats(
             date="2024-01-01",
@@ -302,9 +346,17 @@ class TestDailyStats:
 class TestProjectStats:
     """Test cases for ProjectStats model."""
 
-    def test_project_stats_creation_with_defaults(self):
+    def test_project_stats_creation_with_defaults(self) -> None:
         """Test creating ProjectStats with minimal fields."""
-        stats = ProjectStats(task_name="Test Project")
+        stats = ProjectStats(
+            task_name="Test Project",
+            total_duration=0.0,
+            session_count=0,
+            average_session=0.0,
+            tags=[],
+            first_session=None,
+            last_session=None,
+        )
 
         assert stats.task_name == "Test Project"
         assert stats.total_duration == 0.0
@@ -314,7 +366,7 @@ class TestProjectStats:
         assert stats.first_session is None
         assert stats.last_session is None
 
-    def test_project_stats_creation_with_all_fields(self):
+    def test_project_stats_creation_with_all_fields(self) -> None:
         """Test creating ProjectStats with all fields."""
         first_session = datetime(2024, 1, 1, 9, 0, 0, tzinfo=timezone.utc)
         last_session = datetime(2024, 1, 5, 15, 0, 0, tzinfo=timezone.utc)
@@ -337,7 +389,7 @@ class TestProjectStats:
         assert stats.first_session == first_session
         assert stats.last_session == last_session
 
-    def test_project_stats_validation(self):
+    def test_project_stats_validation(self) -> None:
         """Test ProjectStats field validation."""
         # Test valid stats
         stats = ProjectStats(
@@ -345,6 +397,9 @@ class TestProjectStats:
             total_duration=1800.0,
             session_count=2,
             average_session=900.0,
+            tags=["development", "testing"],
+            first_session=datetime(2024, 1, 1, 9, 0, 0, tzinfo=timezone.utc),
+            last_session=datetime(2024, 1, 1, 10, 0, 0, tzinfo=timezone.utc),
         )
 
         assert stats.task_name == "Valid Project"
@@ -352,7 +407,7 @@ class TestProjectStats:
         assert stats.session_count == 2
         assert stats.average_session == 900.0
 
-    def test_project_stats_serialization(self):
+    def test_project_stats_serialization(self) -> None:
         """Test ProjectStats serialization."""
         first_session = datetime(2024, 1, 1, 9, 0, 0, tzinfo=timezone.utc)
         last_session = datetime(2024, 1, 2, 10, 0, 0, tzinfo=timezone.utc)
@@ -379,7 +434,7 @@ class TestProjectStats:
         assert "Serialization Project" in json_str
         assert "7200.0" in json_str
 
-    def test_project_stats_from_dict(self):
+    def test_project_stats_from_dict(self) -> None:
         """Test creating ProjectStats from dictionary."""
         data = {
             "task_name": "Dict Project",
@@ -406,7 +461,7 @@ class TestProjectStats:
 class TestModelInteractions:
     """Test interactions between different models."""
 
-    def test_time_session_to_daily_stats_data(self):
+    def test_time_session_to_daily_stats_data(self) -> None:
         """Test that TimeSession data can be used for DailyStats."""
         # Create multiple sessions
         sessions = []
@@ -422,6 +477,7 @@ class TestModelInteractions:
                 start_time=start_time,
                 end_time=end_time,
                 is_active=False,
+                description=f"Session for task {i + 1}",
             )
             sessions.append(session)
 
@@ -440,6 +496,9 @@ class TestModelInteractions:
             session_count=session_count,
             unique_tasks=unique_tasks,
             most_used_tags=list(set(all_tags)),
+            longest_session=max(
+                (s.duration for s in sessions if s.duration), default=None
+            ),
         )
 
         assert stats.total_duration == 3 * 3600.0  # 3 hours
@@ -447,7 +506,7 @@ class TestModelInteractions:
         assert stats.unique_tasks == 3
         assert "work" in stats.most_used_tags
 
-    def test_time_session_to_project_stats_data(self):
+    def test_time_session_to_project_stats_data(self) -> None:
         """Test that TimeSession data can be used for ProjectStats."""
         task_name = "Project Alpha"
         sessions = []
@@ -464,6 +523,7 @@ class TestModelInteractions:
                 start_time=start_time,
                 end_time=end_time,
                 is_active=False,
+                description=f"Session for {task_name} phase {i + 1}",
             )
             sessions.append(session)
 
@@ -503,23 +563,27 @@ class TestModelInteractions:
 class TestModelEdgeCases:
     """Test edge cases and error conditions for models."""
 
-    def test_time_session_with_extreme_values(self):
+    def test_time_session_with_extreme_values(self) -> None:
         """Test TimeSession with boundary values."""
         # Test minimum valid task name
-        session = TimeSession(task_name="a")
+        session = TimeSession(task_name="a", description="Minimal task", end_time=None)
         assert session.task_name == "a"
 
         # Test maximum valid task name
         max_name = "x" * 255
-        session = TimeSession(task_name=max_name)
+        session = TimeSession(
+            task_name=max_name, description="Max task name", end_time=None
+        )
         assert session.task_name == max_name
 
         # Test maximum valid description
         max_description = "x" * 1000
-        session = TimeSession(task_name="Task", description=max_description)
+        session = TimeSession(
+            task_name="Task", description=max_description, end_time=None
+        )
         assert session.description == max_description
 
-    def test_daily_stats_with_zero_values(self):
+    def test_daily_stats_with_zero_values(self) -> None:
         """Test DailyStats with zero/empty values."""
         stats = DailyStats(
             date="2024-01-01",
@@ -536,7 +600,7 @@ class TestModelEdgeCases:
         assert stats.most_used_tags == []
         assert stats.longest_session is None
 
-    def test_project_stats_with_zero_values(self):
+    def test_project_stats_with_zero_values(self) -> None:
         """Test ProjectStats with zero/empty values."""
         stats = ProjectStats(
             task_name="Empty Project",

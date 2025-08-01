@@ -24,7 +24,7 @@ from trackit.db.schema import (
 class TestDatabaseManager:
     """Test cases for DatabaseManager class."""
 
-    def test_init_creates_parent_directory(self):
+    def test_init_creates_parent_directory(self) -> None:
         """Test that DatabaseManager creates parent directory."""
         # Arrange
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -38,7 +38,7 @@ class TestDatabaseManager:
             assert db_path.parent.exists()
             assert db_manager.db_path == db_path
 
-    def test_get_connection_context_manager(self, test_db_path):
+    def test_get_connection_context_manager(self, test_db_path) -> None:
         """Test get_connection context manager functionality."""
         # Arrange
         db_manager = DatabaseManager(test_db_path)
@@ -57,7 +57,7 @@ class TestDatabaseManager:
         with pytest.raises(sqlite3.ProgrammingError):
             conn.execute("SELECT 1")
 
-    def test_get_connection_pragma_settings(self, test_db_path):
+    def test_get_connection_pragma_settings(self, test_db_path) -> None:
         """Test that connection has correct PRAGMA settings."""
         # Arrange
         db_manager = DatabaseManager(test_db_path)
@@ -74,7 +74,7 @@ class TestDatabaseManager:
             result = cursor.fetchone()
             assert result[0].upper() == "WAL"
 
-    def test_initialize_database_fresh(self, test_db_path):
+    def test_initialize_database_fresh(self, test_db_path) -> None:
         """Test initializing a fresh database."""
         # Arrange
         db_manager = DatabaseManager(test_db_path)
@@ -94,7 +94,7 @@ class TestDatabaseManager:
             assert "sessions" in tables
             assert "schema_version" in tables
 
-    def test_initialize_database_creates_indexes(self, test_db_path):
+    def test_initialize_database_creates_indexes(self, test_db_path) -> None:
         """Test that database initialization creates indexes."""
         # Arrange
         db_manager = DatabaseManager(test_db_path)
@@ -115,7 +115,7 @@ class TestDatabaseManager:
             assert "idx_sessions_is_active" in indexes
             assert "idx_sessions_tags" in indexes
 
-    def test_initialize_database_creates_triggers(self, test_db_path):
+    def test_initialize_database_creates_triggers(self, test_db_path) -> None:
         """Test that database initialization creates triggers."""
         # Arrange
         db_manager = DatabaseManager(test_db_path)
@@ -130,7 +130,7 @@ class TestDatabaseManager:
 
             assert "update_sessions_timestamp" in triggers
 
-    def test_initialize_database_sets_schema_version(self, test_db_path):
+    def test_initialize_database_sets_schema_version(self, test_db_path) -> None:
         """Test that database initialization sets schema version."""
         # Arrange
         db_manager = DatabaseManager(test_db_path)
@@ -145,7 +145,7 @@ class TestDatabaseManager:
 
             assert version == SCHEMA_VERSION
 
-    def test_initialize_database_existing_current_version(self, test_db_path):
+    def test_initialize_database_existing_current_version(self, test_db_path) -> None:
         """Test initializing database that already has current version."""
         # Arrange
         db_manager = DatabaseManager(test_db_path)
@@ -166,7 +166,7 @@ class TestDatabaseManager:
 
             assert final_count == initial_count
 
-    def test_get_schema_version_fresh_database(self, test_db_path):
+    def test_get_schema_version_fresh_database(self, test_db_path) -> None:
         """Test getting schema version from fresh database."""
         # Arrange
         db_manager = DatabaseManager(test_db_path)
@@ -176,7 +176,7 @@ class TestDatabaseManager:
             version = db_manager._get_schema_version(conn)
             assert version is None
 
-    def test_get_schema_version_existing_database(self, test_db_path):
+    def test_get_schema_version_existing_database(self, test_db_path) -> None:
         """Test getting schema version from existing database."""
         # Arrange
         db_manager = DatabaseManager(test_db_path)
@@ -204,7 +204,7 @@ class TestDatabaseManager:
             version = db_manager._get_schema_version(conn)
             assert version == 42
 
-    def test_set_schema_version_multiple(self, test_db_path):
+    def test_set_schema_version_multiple(self, test_db_path) -> None:
         """Test setting multiple schema versions."""
         # Arrange
         db_manager = DatabaseManager(test_db_path)
@@ -221,7 +221,7 @@ class TestDatabaseManager:
             version = db_manager._get_schema_version(conn)
             assert version == 3
 
-    def test_create_tables(self, test_db_path):
+    def test_create_tables(self, test_db_path) -> None:
         """Test _create_tables method."""
         # Arrange
         db_manager = DatabaseManager(test_db_path)
@@ -254,7 +254,7 @@ class TestDatabaseManager:
             for col in expected_columns:
                 assert col in column_names
 
-    def test_vacuum_database(self, test_db_path):
+    def test_vacuum_database(self, test_db_path) -> None:
         """Test vacuum database operation."""
         # Arrange
         db_manager = DatabaseManager(test_db_path)
@@ -269,7 +269,7 @@ class TestDatabaseManager:
             tables = cursor.fetchall()
             assert len(tables) > 0
 
-    def test_get_database_stats_empty_database(self, test_db_path):
+    def test_get_database_stats_empty_database(self, test_db_path) -> None:
         """Test getting stats from empty database."""
         # Arrange
         db_manager = DatabaseManager(test_db_path)
@@ -286,7 +286,7 @@ class TestDatabaseManager:
         assert stats["last_session"] is None
         assert stats["database_size"] > 0  # File exists
 
-    def test_get_database_stats_with_data(self, test_db_path):
+    def test_get_database_stats_with_data(self, test_db_path) -> None:
         """Test getting stats from database with data."""
         # Arrange
         db_manager = DatabaseManager(test_db_path)
@@ -345,7 +345,7 @@ class TestDatabaseManager:
             assert stats["last_session"] is None
             assert stats["database_size"] == 0
 
-    def test_migrate_database_placeholder(self, test_db_path):
+    def test_migrate_database_placeholder(self, test_db_path) -> None:
         """Test migration method (currently placeholder)."""
         # Arrange
         db_manager = DatabaseManager(test_db_path)
@@ -355,7 +355,7 @@ class TestDatabaseManager:
             db_manager._migrate_database(conn, 0, 1)
 
     @patch("trackit.db.schema.SCHEMA_VERSION", 2)
-    def test_initialize_database_with_migration_needed(self, test_db_path):
+    def test_initialize_database_with_migration_needed(self, test_db_path) -> None:
         """Test database initialization when migration would be needed."""
         # Arrange
         db_manager = DatabaseManager(test_db_path)
@@ -380,7 +380,7 @@ class TestDatabaseManager:
 class TestSchemaConstants:
     """Test schema SQL constants."""
 
-    def test_create_sessions_table_sql(self):
+    def test_create_sessions_table_sql(self) -> None:
         """Test sessions table creation SQL."""
         # Act & Assert
         assert "CREATE TABLE IF NOT EXISTS sessions" in CREATE_SESSIONS_TABLE
@@ -402,7 +402,7 @@ class TestSchemaConstants:
             in CREATE_SCHEMA_VERSION_TABLE
         )
 
-    def test_create_indexes_list(self):
+    def test_create_indexes_list(self) -> None:
         """Test indexes creation SQL list."""
         # Act & Assert
         assert isinstance(CREATE_INDEXES, list)
@@ -412,7 +412,7 @@ class TestSchemaConstants:
             assert "CREATE INDEX IF NOT EXISTS" in index_sql
             assert "sessions" in index_sql
 
-    def test_create_triggers_list(self):
+    def test_create_triggers_list(self) -> None:
         """Test triggers creation SQL list."""
         # Act & Assert
         assert isinstance(CREATE_TRIGGERS, list)
@@ -421,7 +421,7 @@ class TestSchemaConstants:
         for trigger_sql in CREATE_TRIGGERS:
             assert "CREATE TRIGGER IF NOT EXISTS" in trigger_sql
 
-    def test_schema_version_constant(self):
+    def test_schema_version_constant(self) -> None:
         """Test schema version constant."""
         # Act & Assert
         assert isinstance(SCHEMA_VERSION, int)
@@ -432,7 +432,7 @@ class TestSchemaConstants:
 class TestDatabaseManagerIntegration:
     """Integration tests for DatabaseManager."""
 
-    def test_full_database_lifecycle(self, test_db_path):
+    def test_full_database_lifecycle(self, test_db_path) -> None:
         """Test complete database lifecycle."""
         # Initialize
         db_manager = DatabaseManager(test_db_path)
@@ -479,7 +479,7 @@ class TestDatabaseManagerIntegration:
         assert stats["total_sessions"] == 1
         assert stats["active_sessions"] == 1
 
-    def test_database_constraints_and_triggers(self, test_db_path):
+    def test_database_constraints_and_triggers(self, test_db_path) -> None:
         """Test database constraints and triggers work correctly."""
         # Arrange
         db_manager = DatabaseManager(test_db_path)
@@ -523,7 +523,7 @@ class TestDatabaseManagerIntegration:
         # updated_at should be different (though might be same if very fast)
         # This test is somewhat time-sensitive, but the trigger should work
 
-    def test_database_performance_with_indexes(self, test_db_path):
+    def test_database_performance_with_indexes(self, test_db_path) -> None:
         """Test that indexes improve query performance."""
         # Arrange
         db_manager = DatabaseManager(test_db_path)
@@ -574,7 +574,7 @@ class TestDatabaseManagerIntegration:
             count = cursor.fetchone()[0]
             assert count == 50  # Half should be active
 
-    def test_database_concurrent_access(self, test_db_path):
+    def test_database_concurrent_access(self, test_db_path) -> None:
         """Test database handles concurrent access correctly."""
         # Arrange
         db_manager1 = DatabaseManager(test_db_path)

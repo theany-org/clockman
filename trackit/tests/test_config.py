@@ -7,6 +7,7 @@ This module tests configuration loading, validation, and management functionalit
 import json
 import tempfile
 from pathlib import Path
+from typing import Any
 from unittest.mock import Mock, patch
 
 import pytest
@@ -17,7 +18,7 @@ from trackit.utils.config import ConfigManager, get_config_manager
 class TestConfigManager:
     """Test cases for ConfigManager class."""
 
-    def test_init_creates_directories(self):
+    def test_init_creates_directories(self) -> None:
         """Test that ConfigManager creates config and data directories."""
         with tempfile.TemporaryDirectory() as temp_dir:
             with (
@@ -39,7 +40,7 @@ class TestConfigManager:
                     == config_manager.config_dir / "config.json"
                 )
 
-    def test_init_loads_default_config_on_fresh_install(self):
+    def test_init_loads_default_config_on_fresh_install(self) -> None:
         """Test default configuration is created on fresh install."""
         with tempfile.TemporaryDirectory() as temp_dir:
             with (
@@ -59,7 +60,7 @@ class TestConfigManager:
                 assert config_manager.get("time_format") == "%H:%M:%S"
                 assert config_manager.get("timezone") == "local"
 
-    def test_init_loads_existing_config(self):
+    def test_init_loads_existing_config(self) -> None:
         """Test loading existing configuration file."""
         with tempfile.TemporaryDirectory() as temp_dir:
             config_dir = Path(temp_dir) / "config"
@@ -95,7 +96,7 @@ class TestConfigManager:
                 # Should still have defaults for missing keys
                 assert config_manager.get("timezone") == "local"
 
-    def test_init_handles_corrupt_config_file(self):
+    def test_init_handles_corrupt_config_file(self) -> None:
         """Test handling of corrupt configuration file."""
         with tempfile.TemporaryDirectory() as temp_dir:
             config_dir = Path(temp_dir) / "config"
@@ -123,7 +124,7 @@ class TestConfigManager:
                 assert config_manager.get("date_format") == "%Y-%m-%d"
                 assert config_manager.get("time_format") == "%H:%M:%S"
 
-    def test_get_simple_key(self):
+    def test_get_simple_key(self) -> None:
         """Test getting simple configuration value."""
         config_manager = ConfigManager()
 
@@ -131,7 +132,7 @@ class TestConfigManager:
         assert config_manager.get("date_format") == "%Y-%m-%d"
         assert config_manager.get("timezone") == "local"
 
-    def test_get_nested_key(self):
+    def test_get_nested_key(self) -> None:
         """Test getting nested configuration value."""
         config_manager = ConfigManager()
 
@@ -140,7 +141,7 @@ class TestConfigManager:
         assert config_manager.get("display.show_seconds") is True
         assert config_manager.get("display.compact_mode") is False
 
-    def test_get_with_default(self):
+    def test_get_with_default(self) -> None:
         """Test getting value with default fallback."""
         config_manager = ConfigManager()
 
@@ -148,7 +149,7 @@ class TestConfigManager:
         assert config_manager.get("nonexistent_key", "default_value") == "default_value"
         assert config_manager.get("colors.nonexistent", "blue") == "blue"
 
-    def test_get_nonexistent_key_no_default(self):
+    def test_get_nonexistent_key_no_default(self) -> None:
         """Test getting non-existent key without default."""
         config_manager = ConfigManager()
 
@@ -156,7 +157,7 @@ class TestConfigManager:
         assert config_manager.get("nonexistent_key") is None
         assert config_manager.get("colors.nonexistent") is None
 
-    def test_set_simple_key(self):
+    def test_set_simple_key(self) -> None:
         """Test setting simple configuration value."""
         config_manager = ConfigManager()
 
@@ -166,7 +167,7 @@ class TestConfigManager:
         # Assert
         assert config_manager.get("date_format") == "%d-%m-%Y"
 
-    def test_set_nested_key(self):
+    def test_set_nested_key(self) -> None:
         """Test setting nested configuration value."""
         config_manager = ConfigManager()
 
@@ -178,7 +179,7 @@ class TestConfigManager:
         assert config_manager.get("colors.active") == "blue"
         assert config_manager.get("display.max_lines") == 25
 
-    def test_set_creates_nested_structure(self):
+    def test_set_creates_nested_structure(self) -> None:
         """Test setting value creates nested structure if needed."""
         config_manager = ConfigManager()
 
@@ -189,7 +190,7 @@ class TestConfigManager:
         assert config_manager.get("new_section.new_key") == "new_value"
 
     @patch("trackit.utils.config.ConfigManager._save_config")
-    def test_set_saves_config(self, mock_save):
+    def test_set_saves_config(self, mock_save) -> None:
         """Test that set method saves configuration."""
         config_manager = ConfigManager()
 
@@ -199,7 +200,7 @@ class TestConfigManager:
         # Assert
         mock_save.assert_called_once()
 
-    def test_get_data_dir(self):
+    def test_get_data_dir(self) -> None:
         """Test getting data directory."""
         config_manager = ConfigManager()
 
@@ -210,7 +211,7 @@ class TestConfigManager:
         assert isinstance(data_dir, Path)
         assert data_dir.exists()
 
-    def test_get_data_dir_custom_path(self):
+    def test_get_data_dir_custom_path(self) -> None:
         """Test getting custom data directory from config."""
         config_manager = ConfigManager()
         custom_path = "/tmp/custom_trackit_data"
@@ -222,7 +223,7 @@ class TestConfigManager:
         # Assert
         assert data_dir == Path(custom_path)
 
-    def test_get_config_dir(self):
+    def test_get_config_dir(self) -> None:
         """Test getting configuration directory."""
         config_manager = ConfigManager()
 
@@ -234,7 +235,7 @@ class TestConfigManager:
         assert config_dir.exists()
         assert config_dir == config_manager.config_dir
 
-    def test_get_date_format(self):
+    def test_get_date_format(self) -> None:
         """Test getting date format."""
         config_manager = ConfigManager()
 
@@ -245,7 +246,7 @@ class TestConfigManager:
         config_manager.set("date_format", "%d/%m/%Y")
         assert config_manager.get_date_format() == "%d/%m/%Y"
 
-    def test_get_time_format(self):
+    def test_get_time_format(self) -> None:
         """Test getting time format."""
         config_manager = ConfigManager()
 
@@ -256,7 +257,7 @@ class TestConfigManager:
         config_manager.set("time_format", "%I:%M %p")
         assert config_manager.get_time_format() == "%I:%M %p"
 
-    def test_get_color(self):
+    def test_get_color(self) -> None:
         """Test getting UI element colors."""
         config_manager = ConfigManager()
 
@@ -265,7 +266,7 @@ class TestConfigManager:
         assert config_manager.get_color("inactive") == "dim"
         assert config_manager.get_color("nonexistent") == "white"  # Default
 
-    def test_is_compact_mode(self):
+    def test_is_compact_mode(self) -> None:
         """Test checking compact mode setting."""
         config_manager = ConfigManager()
 
@@ -276,7 +277,7 @@ class TestConfigManager:
         config_manager.set("display.compact_mode", True)
         assert config_manager.is_compact_mode() is True
 
-    def test_show_seconds(self):
+    def test_show_seconds(self) -> None:
         """Test checking show seconds setting."""
         config_manager = ConfigManager()
 
@@ -287,7 +288,7 @@ class TestConfigManager:
         config_manager.set("display.show_seconds", False)
         assert config_manager.show_seconds() is False
 
-    def test_get_max_task_name_length(self):
+    def test_get_max_task_name_length(self) -> None:
         """Test getting maximum task name length."""
         config_manager = ConfigManager()
 
@@ -309,7 +310,7 @@ class TestConfigManager:
         config_manager.set("default_tags", ["work", "project"])
         assert config_manager.get_default_tags() == ["work", "project"]
 
-    def test_is_auto_stop_enabled(self):
+    def test_is_auto_stop_enabled(self) -> None:
         """Test checking auto-stop setting."""
         config_manager = ConfigManager()
 
@@ -320,7 +321,7 @@ class TestConfigManager:
         config_manager.set("auto_stop_inactive", True)
         assert config_manager.is_auto_stop_enabled() is True
 
-    def test_get_inactive_timeout(self):
+    def test_get_inactive_timeout(self) -> None:
         """Test getting inactive timeout."""
         config_manager = ConfigManager()
 
@@ -331,7 +332,7 @@ class TestConfigManager:
         config_manager.set("inactive_timeout_minutes", 60)
         assert config_manager.get_inactive_timeout() == 60
 
-    def test_reset_to_defaults(self):
+    def test_reset_to_defaults(self) -> None:
         """Test resetting configuration to defaults."""
         config_manager = ConfigManager()
 
@@ -353,7 +354,7 @@ class TestConfigManager:
         assert config_manager.get("colors.active") == "green"
         assert config_manager.get("custom_setting") is None
 
-    def test_export_config(self):
+    def test_export_config(self) -> None:
         """Test exporting configuration to file."""
         config_manager = ConfigManager()
 
@@ -379,12 +380,12 @@ class TestConfigManager:
         finally:
             export_path.unlink()
 
-    def test_import_config(self):
+    def test_import_config(self) -> None:
         """Test importing configuration from file."""
         config_manager = ConfigManager()
 
         # Create import file
-        import_config = {
+        import_config: dict[str, Any] = {
             "date_format": "%m/%d/%Y",
             "time_format": "%I:%M %p",
             "colors": {"active": "purple"},
@@ -410,7 +411,7 @@ class TestConfigManager:
         finally:
             import_path.unlink()
 
-    def test_save_config_io_error_handling(self):
+    def test_save_config_io_error_handling(self) -> None:
         """Test handling IO errors when saving config."""
         config_manager = ConfigManager()
 
@@ -424,7 +425,7 @@ class TestConfigManager:
                 args = mock_print.call_args[0]
                 assert "Could not save config file" in args[0]
 
-    def test_load_config_io_error_handling(self):
+    def test_load_config_io_error_handling(self) -> None:
         """Test handling IO errors when loading config."""
         with tempfile.TemporaryDirectory() as temp_dir:
             config_dir = Path(temp_dir) / "config"
@@ -454,7 +455,7 @@ class TestConfigManager:
                 mock_print.assert_called()
                 assert config_manager.get("date_format") == "%Y-%m-%d"
 
-    def test_default_config_structure(self):
+    def test_default_config_structure(self) -> None:
         """Test default configuration has expected structure."""
         config_manager = ConfigManager()
 
@@ -483,7 +484,7 @@ class TestConfigManager:
 class TestGlobalConfigManager:
     """Test cases for global configuration manager."""
 
-    def test_get_config_manager_singleton(self):
+    def test_get_config_manager_singleton(self) -> None:
         """Test that get_config_manager returns singleton instance."""
         # Reset global instance
         import trackit.utils.config
@@ -498,7 +499,7 @@ class TestGlobalConfigManager:
         assert config1 is config2
         assert isinstance(config1, ConfigManager)
 
-    def test_get_config_manager_initializes_once(self):
+    def test_get_config_manager_initializes_once(self) -> None:
         """Test that get_config_manager initializes only once."""
         # Reset global instance
         import trackit.utils.config
@@ -523,7 +524,7 @@ class TestGlobalConfigManager:
 class TestConfigManagerIntegration:
     """Integration tests for ConfigManager."""
 
-    def test_full_config_workflow(self):
+    def test_full_config_workflow(self) -> None:
         """Test complete configuration workflow."""
         with tempfile.TemporaryDirectory() as temp_dir:
             with (
@@ -559,7 +560,7 @@ class TestConfigManagerIntegration:
                 assert config_manager2.get("colors.active") == "blue"
                 assert config_manager2.get("display.max_task_name_length") == 75
 
-    def test_config_persistence_across_instances(self):
+    def test_config_persistence_across_instances(self) -> None:
         """Test configuration persists across different instances."""
         with tempfile.TemporaryDirectory() as temp_dir:
             config_dir = Path(temp_dir) / "config"
@@ -586,7 +587,7 @@ class TestConfigManagerIntegration:
                 assert config2.get("test_setting") == "test_value"
                 assert config2.get("colors.custom") == "purple"
 
-    def test_config_file_format_and_structure(self):
+    def test_config_file_format_and_structure(self) -> None:
         """Test that config file has correct format and structure."""
         with tempfile.TemporaryDirectory() as temp_dir:
             config_dir = Path(temp_dir) / "config"
@@ -627,7 +628,7 @@ class TestConfigManagerIntegration:
 class TestConfigManagerEdgeCases:
     """Test edge cases and error conditions."""
 
-    def test_get_with_deep_nesting(self):
+    def test_get_with_deep_nesting(self) -> None:
         """Test getting values with deep nesting."""
         config_manager = ConfigManager()
         config_manager.set("level1.level2.level3.level4", "deep_value")
@@ -636,7 +637,7 @@ class TestConfigManagerEdgeCases:
         assert config_manager.get("level1.level2.level3.level4") == "deep_value"
         assert config_manager.get("level1.level2.level3") == {"level4": "deep_value"}
 
-    def test_set_with_none_value(self):
+    def test_set_with_none_value(self) -> None:
         """Test setting None value."""
         config_manager = ConfigManager()
 
@@ -646,7 +647,7 @@ class TestConfigManagerEdgeCases:
         # Assert
         assert config_manager.get("null_value") is None
 
-    def test_set_with_empty_key(self):
+    def test_set_with_empty_key(self) -> None:
         """Test setting value with empty key."""
         config_manager = ConfigManager()
 
@@ -656,7 +657,7 @@ class TestConfigManagerEdgeCases:
         # Assert
         assert config_manager.get("") == "empty_key_value"
 
-    def test_get_with_non_dict_intermediate_value(self):
+    def test_get_with_non_dict_intermediate_value(self) -> None:
         """Test getting nested value when intermediate is not dict."""
         config_manager = ConfigManager()
         config_manager.set("string_value", "not_a_dict")
@@ -664,7 +665,7 @@ class TestConfigManagerEdgeCases:
         # Act & Assert
         assert config_manager.get("string_value.nested", "default") == "default"
 
-    def test_large_configuration_handling(self):
+    def test_large_configuration_handling(self) -> None:
         """Test handling large configuration."""
         config_manager = ConfigManager()
 
