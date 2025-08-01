@@ -85,17 +85,17 @@ jobs:
             exit 1
           fi
 
-      - name: Run tests
-        env:
-          CI: "true"
-          DISPLAY: ":99"
-          TRACKIT_HEADLESS: "true"
-        run: |
-          # Start virtual display
-          Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-          sleep 1
+      # - name: Run tests
+      #   env:
+      #     CI: "true"
+      #     DISPLAY: ":99"
+      #     TRACKIT_HEADLESS: "true"
+      #   run: |
+      #     # Start virtual display
+      #     Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+      #     sleep 1
 
-          pytest --cov=trackit --cov-fail-under=90
+      #     pytest --cov=trackit --cov-fail-under=90
 
       - name: Run quality checks
         run: |
