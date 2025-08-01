@@ -48,7 +48,9 @@ class TestCLIMain:
         )
 
     @patch("trackit.cli.main.get_tracker")
-    def test_start_command_with_tags_and_description(self, mock_get_tracker: Mock) -> None:
+    def test_start_command_with_tags_and_description(
+        self, mock_get_tracker: Mock
+    ) -> None:
         """Test start command with tags and description."""
         # Arrange
         mock_tracker = Mock()
@@ -235,7 +237,9 @@ class TestCLIMain:
 
     @patch("trackit.cli.main.get_tracker")
     @patch("datetime.date")
-    def test_log_command_today_with_entries(self, mock_date: Mock, mock_get_tracker: Mock) -> None:
+    def test_log_command_today_with_entries(
+        self, mock_date: Mock, mock_get_tracker: Mock
+    ) -> None:
         """Test log command showing today's entries."""
         # Arrange
         mock_date.today.return_value = datetime(2024, 1, 1).date()
@@ -483,7 +487,9 @@ class TestCLICommandValidation:
         assert "Missing argument" in result.output or "Usage:" in result.output
 
     @patch("trackit.cli.main.get_tracker")
-    def test_start_command_empty_task_name_handled(self, mock_get_tracker: Mock) -> None:
+    def test_start_command_empty_task_name_handled(
+        self, mock_get_tracker: Mock
+    ) -> None:
         """Test that empty task name is handled gracefully."""
         # Arrange
         mock_tracker = Mock()

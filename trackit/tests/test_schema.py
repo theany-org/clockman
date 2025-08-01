@@ -146,7 +146,9 @@ class TestDatabaseManager:
 
             assert version == SCHEMA_VERSION
 
-    def test_initialize_database_existing_current_version(self, test_db_path: Path) -> None:
+    def test_initialize_database_existing_current_version(
+        self, test_db_path: Path
+    ) -> None:
         """Test initializing database that already has current version."""
         # Arrange
         db_manager = DatabaseManager(test_db_path)
@@ -356,7 +358,9 @@ class TestDatabaseManager:
             db_manager._migrate_database(conn, 0, 1)
 
     @patch("trackit.db.schema.SCHEMA_VERSION", 2)
-    def test_initialize_database_with_migration_needed(self, test_db_path: Path) -> None:
+    def test_initialize_database_with_migration_needed(
+        self, test_db_path: Path
+    ) -> None:
         """Test database initialization when migration would be needed."""
         # Arrange
         db_manager = DatabaseManager(test_db_path)
