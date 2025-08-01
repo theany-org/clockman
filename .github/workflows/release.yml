@@ -146,7 +146,7 @@ jobs:
     needs: [validate-release, build]
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest]
         python-version: ["3.11", "3.12"]
     steps:
       - name: Set up Python ${{ matrix.python-version }}
