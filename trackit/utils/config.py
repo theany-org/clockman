@@ -46,6 +46,14 @@ class ConfigManager:
                 "compact_mode": False,
                 "max_task_name_length": 50,
             },
+            "notifications": {
+                "enabled": True,
+                "timeout_ms": 5000,
+                "fallback_to_log": True,
+                "show_task_start": True,
+                "show_task_stop": True,
+                "show_errors": True,
+            },
         }
 
         # Load existing configuration
@@ -153,6 +161,30 @@ class ConfigManager:
     def get_inactive_timeout(self) -> int:
         """Get inactivity timeout in minutes."""
         return cast(int, self.get("inactive_timeout_minutes", 30))
+
+    def are_notifications_enabled(self) -> bool:
+        """Check if desktop notifications are enabled."""
+        return cast(bool, self.get("notifications.enabled", True))
+
+    def get_notification_timeout(self) -> int:
+        """Get notification timeout in milliseconds."""
+        return cast(int, self.get("notifications.timeout_ms", 5000))
+
+    def should_fallback_to_log(self) -> bool:
+        """Check if notifications should fallback to logging when unavailable."""
+        return cast(bool, self.get("notifications.fallback_to_log", True))
+
+    def should_notify_task_start(self) -> bool:
+        """Check if task start notifications are enabled."""
+        return cast(bool, self.get("notifications.show_task_start", True))
+
+    def should_notify_task_stop(self) -> bool:
+        """Check if task stop notifications are enabled."""
+        return cast(bool, self.get("notifications.show_task_stop", True))
+
+    def should_notify_errors(self) -> bool:
+        """Check if error notifications are enabled."""
+        return cast(bool, self.get("notifications.show_errors", True))
 
     def reset_to_defaults(self) -> None:
         """Reset configuration to default values."""

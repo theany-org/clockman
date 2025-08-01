@@ -13,6 +13,7 @@ from rich.table import Table
 from ..core.time_tracker import TimeTracker
 from ..utils.config import get_config_manager
 from ..utils.formatting import format_datetime, format_duration
+from ..utils.notifier import notify_sync
 
 # Create the main typer app
 app = typer.Typer(
@@ -58,6 +59,10 @@ def start(
             console.print(
                 f"[yellow]Stopped previous task: {active_session.task_name}[/yellow]"
             )
+            notify_sync(
+                title="TrackIt Notification",
+                message=f"Stopped previous task: {active_session.task_name}",
+            )
 
         # Start new session
         session_id = time_tracker.start_session(
@@ -70,6 +75,10 @@ def start(
         if description:
             console.print(f"[dim]Description: {description}[/dim]")
         console.print(f"[dim]Session ID: {session_id}[/dim]")
+        notify_sync(
+            title="TrackIt Notification",
+            message=f"Started tracking: {task_name}",
+        )
 
     except Exception as e:
         console.print(f"[red]Error starting task: {e}[/red]")
@@ -85,6 +94,10 @@ def stop() -> None:
 
         if not active_session:
             console.print("[yellow]No active session to stop[/yellow]")
+            notify_sync(
+                title="TrackIt Notification",
+                message="No active session to stop",
+            )
             return
 
         stopped_session = time_tracker.stop_session()
@@ -95,7 +108,10 @@ def stop() -> None:
                 f"[green]✓[/green] Stopped: [bold]{stopped_session.task_name}[/bold]"
             )
             console.print(f"[dim]Duration: {format_duration(duration)}[/dim]")
-
+            notify_sync(
+                title="TrackIt Notification",
+                message=f"Stopped: {stopped_session.task_name} (Duration: {format_duration(duration)})",
+            )
     except Exception as e:
         console.print(f"[red]Error stopping session: {e}[/red]")
         raise typer.Exit(1)
@@ -202,31 +218,6 @@ def log(
 
     except Exception as e:
         console.print(f"[red]Error showing log: {e}[/red]")
-        raise typer.Exit(1)
-
-
-@app.command()
-def tray() -> None:
-    """Launch TrackIt system tray interface."""
-    try:
-        from ..tray import TrayManager
-        
-        console.print("[green]Starting TrackIt system tray...[/green]")
-        console.print("[dim]The tray icon should appear in your system tray.[/dim]")
-        console.print("[dim]Right-click the icon to access time tracking options.[/dim]")
-        console.print("[dim]Press Ctrl+C to stop the tray application.[/dim]")
-        
-        tray_manager = TrayManager()
-        tray_manager.run()
-        
-    except ImportError as e:
-        console.print(f"[red]Error: System tray dependencies not available: {e}[/red]")
-        console.print("[yellow]Install with: pip install trackit[tray][/yellow]")
-        raise typer.Exit(1)
-    except KeyboardInterrupt:
-        console.print("\n[yellow]Stopping system tray...[/yellow]")
-    except Exception as e:
-        console.print(f"[red]Error starting system tray: {e}[/red]")
         raise typer.Exit(1)
 
 
