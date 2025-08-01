@@ -1,5 +1,5 @@
 name: Feature Request
-description: Suggest a new feature or enhancement for TrackIt
+description: Suggest a new feature or enhancement for Clockman
 title: "[Feature]: "
 labels: ["enhancement", "triage"]
 assignees: ["Epic-R-R"]
@@ -15,7 +15,7 @@ body:
     attributes:
       label: Feature description
       description: A clear and concise description of the feature you'd like to see
-      placeholder: What would you like TrackIt to do?
+      placeholder: What would you like Clockman to do?
     validations:
       required: true
 

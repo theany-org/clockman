@@ -1,5 +1,5 @@
 """
-Database repository for TrackIt sessions.
+Database repository for Clockman sessions.
 
 This module provides the data access layer for time tracking sessions.
 """

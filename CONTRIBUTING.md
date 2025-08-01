@@ -1,6 +1,6 @@
-# Contributing to TrackIt
+# Contributing to Clockman
 
-Thank you for your interest in contributing to TrackIt We welcome contributions from developers of all skill levels. This guide will help you get started.
+Thank you for your interest in contributing to Clockman We welcome contributions from developers of all skill levels. This guide will help you get started.
 
 ## Table of Contents
 
@@ -33,7 +33,7 @@ We welcome several types of contributions:
 
 ### Before You Start
 
-1. Check existing [issues](https://github.com/theany-org/trackit/issues) to avoid duplicate work
+1. Check existing [issues](https://github.com/theany-org/clockman/issues) to avoid duplicate work
 2. For major changes, open an issue first to discuss your proposal
 3. Fork the repository and create a feature branch
 
@@ -50,8 +50,8 @@ We welcome several types of contributions:
 1. **Fork and clone the repository**
 
    ```bash
-   git clone https://github.com/theany-org/trackit.git
-   cd trackit
+   git clone https://github.com/theany-org/clockman.git
+   cd clockman
    ```
 
 2. **Create a virtual environment**
@@ -74,11 +74,11 @@ We welcome several types of contributions:
    pytest
 
    # Check code style
-   black --check trackit/
-   isort --check-only trackit/
+   black --check clockman/
+   isort --check-only clockman/
 
    # Type checking
-   mypy trackit/
+   mypy clockman/
    ```
 
 ## Making Changes
@@ -115,10 +115,10 @@ Use descriptive branch names:
 4. **Run code quality checks**
 
    ```bash
-   black trackit/
-   isort trackit/
-   flake8 trackit/
-   mypy trackit/
+   black clockman/
+   isort clockman/
+   flake8 clockman/
+   mypy clockman/
    ```
 
 ## Testing
@@ -132,7 +132,7 @@ We maintain high test coverage (target: 90%+). Please include tests for your cha
 pytest
 
 # Run with coverage report
-pytest --cov=trackit --cov-report=html
+pytest --cov=clockman --cov-report=html
 
 # Run specific test categories
 pytest -m unit           # Unit tests only
@@ -213,10 +213,10 @@ def calculate_session_duration(start_time: datetime, end_time: datetime) -> time
 
    ```bash
    pytest
-   black --check trackit/
-   isort --check-only trackit/
-   flake8 trackit/
-   mypy trackit/
+   black --check clockman/
+   isort --check-only clockman/
+   flake8 clockman/
+   mypy clockman/
    ```
 
 2. **Update documentation** if needed
@@ -270,7 +270,7 @@ When reporting bugs, please include:
 
    - Python version
    - Operating system
-   - TrackIt version
+   - Clockman version
 
 2. **Steps to reproduce**
 
@@ -290,7 +290,7 @@ When reporting bugs, please include:
 
 - Python version: 3.11.5
 - OS: Ubuntu 20.04
-- TrackIt version: 0.1.0
+- Clockman version: 1.0.0
 
 **Description:**
 Brief description of the bug
@@ -345,7 +345,7 @@ Any other context or screenshots
 ### Project Structure
 
 ```bash
-trackit/
+clockman/
 ├── cli/           # CLI commands and interface
 ├── core/          # Core business logic
 ├── db/            # Database operations and models
@@ -384,7 +384,7 @@ trackit/
 
 ## Recognition
 
-Contributors will be recognized in our README and release notes. Thank you for helping make TrackIt better!
+Contributors will be recognized in our README and release notes. Thank you for helping make Clockman better!
 
 ---
 

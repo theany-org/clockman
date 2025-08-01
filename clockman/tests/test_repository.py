@@ -1,5 +1,5 @@
 """
-Tests for database repository (trackit.db.repository).
+Tests for database repository (clockman.db.repository).
 
 This module tests the data access layer including CRUD operations,
 queries, and database interactions.
@@ -12,8 +12,8 @@ from uuid import uuid4
 
 import pytest
 
-from trackit.db.models import DailyStats, ProjectStats, TimeSession
-from trackit.db.repository import SessionRepository
+from clockman.db.models import DailyStats, ProjectStats, TimeSession
+from clockman.db.repository import SessionRepository
 
 
 class TestSessionRepository:

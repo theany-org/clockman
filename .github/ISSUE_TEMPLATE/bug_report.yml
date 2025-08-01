@@ -1,5 +1,5 @@
 name: Bug Report
-description: File a bug report to help us improve TrackIt
+description: File a bug report to help us improve Clockman
 title: "[Bug]: "
 labels: ["bug", "triage"]
 assignees: ["Epic-R-R"]
@@ -48,7 +48,7 @@ body:
       placeholder: |
         - OS: [e.g. Ubuntu 22.04, macOS 13.0, Windows 11]
         - Python version: [e.g. 3.11.5]
-        - TrackIt version: [e.g. 0.1.0]
+        - Clockman version: [e.g. 1.0.0]
         - Installation method: [e.g. pip, git clone]
       render: markdown
     validations:

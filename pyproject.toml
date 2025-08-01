@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "clockman"
-version = "0.1.0"
+version = "1.0.0"
 description = "Terminal-based time tracking for developers"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -48,25 +48,25 @@ dev = [
 ]
 
 [project.scripts]
-tracker = "trackit.cli.main:app"
+clockman = "clockman.cli.main:app"
 
 [project.urls]
-Homepage = "https://github.com/theany-org/trackit"
-Repository = "https://github.com/theany-org/trackit.git"
-Issues = "https://github.com/theany-org/trackit/issues"
+Homepage = "https://github.com/theany-org/clockman"
+Repository = "https://github.com/theany-org/clockman.git"
+Issues = "https://github.com/theany-org/clockman/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["trackit"]
+packages = ["clockman"]
 
 [tool.pytest.ini_options]
-testpaths = ["trackit/tests"]
+testpaths = ["clockman/tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = [
     "--strict-markers",
     "--strict-config",
-    "--cov=trackit",
+    "--cov=clockman",
     "--cov-report=html",
     "--cov-report=term-missing",
     "--cov-fail-under=90",
@@ -100,7 +100,7 @@ extend-exclude = '''
 profile = "black"
 multi_line_output = 3
 line_length = 88
-known_first_party = ["trackit"]
+known_first_party = ["clockman"]
 
 [tool.mypy]
 python_version = "3.11"

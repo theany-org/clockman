@@ -1,5 +1,5 @@
 """
-Pytest configuration and fixtures for TrackIt tests.
+Pytest configuration and fixtures for Clockman tests.
 
 This module provides shared fixtures and configuration for all test modules.
 """
@@ -14,11 +14,11 @@ from uuid import uuid4
 import pytest
 from pydantic import ValidationError
 
-from trackit.core.time_tracker import TimeTracker
-from trackit.db.models import TimeSession
-from trackit.db.repository import SessionRepository
-from trackit.db.schema import DatabaseManager
-from trackit.utils.config import ConfigManager
+from clockman.core.time_tracker import TimeTracker
+from clockman.db.models import TimeSession
+from clockman.db.repository import SessionRepository
+from clockman.db.schema import DatabaseManager
+from clockman.utils.config import ConfigManager
 
 
 @pytest.fixture
@@ -31,7 +31,7 @@ def temp_dir() -> Generator[Path, None, None]:
 @pytest.fixture
 def test_db_path(temp_dir: Path) -> Path:
     """Provide a test database path."""
-    return temp_dir / "test_trackit.db"
+    return temp_dir / "test_clockman.db"
 
 
 @pytest.fixture
@@ -58,7 +58,7 @@ def time_tracker(temp_dir: Path) -> TimeTracker:
 def mock_config_manager() -> Mock:
     """Provide a mocked configuration manager."""
     mock_config = Mock(spec=ConfigManager)
-    mock_config.get_data_dir.return_value = Path("/tmp/test_trackit")
+    mock_config.get_data_dir.return_value = Path("/tmp/test_clockman")
     mock_config.get_date_format.return_value = "%Y-%m-%d"
     mock_config.get_time_format.return_value = "%H:%M:%S"
     mock_config.show_seconds.return_value = True

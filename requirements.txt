@@ -1,5 +1,5 @@
-# TrackIt Production Dependencies
-# These are the core dependencies needed to run TrackIt
+# ClockMan Production Dependencies
+# These are the core dependencies needed to run ClockMan
 
 # CLI Framework
 typer>=0.9.0

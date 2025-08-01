@@ -3,15 +3,15 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from trackit.utils import notifier
+from clockman.utils import notifier
 
 
 @pytest.mark.asyncio
 async def test_notify_sends_notification() -> None:
     """Test that notifier.notify() calls the DesktopNotifier.send method."""
     with (
-        patch("trackit.utils.notifier._get_notifier") as mock_get_notifier,
-        patch("trackit.utils.notifier.get_config_manager") as mock_config,
+        patch("clockman.utils.notifier._get_notifier") as mock_get_notifier,
+        patch("clockman.utils.notifier.get_config_manager") as mock_config,
         patch.dict(os.environ, {"DISPLAY": ":0"}, clear=True),
     ):
         # Setup mocks
@@ -37,13 +37,13 @@ async def test_notify_sends_notification() -> None:
 @pytest.mark.asyncio
 async def test_notify_disabled_in_config() -> None:
     """Test that notify respects configuration when notifications are disabled."""
-    with patch("trackit.utils.notifier.get_config_manager") as mock_config:
+    with patch("clockman.utils.notifier.get_config_manager") as mock_config:
         mock_config_instance = MagicMock()
         mock_config_instance.are_notifications_enabled.return_value = False
         mock_config_instance.should_fallback_to_log.return_value = True
         mock_config.return_value = mock_config_instance
 
-        with patch("trackit.utils.notifier.logger") as mock_logger:
+        with patch("clockman.utils.notifier.logger") as mock_logger:
             result = await notifier.notify("Test Title", "Test Message")
 
             assert result is None
@@ -56,7 +56,7 @@ async def test_notify_disabled_in_config() -> None:
 async def test_notify_headless_environment() -> None:
     """Test notify behavior in headless environment (no DISPLAY)."""
     with (
-        patch("trackit.utils.notifier.get_config_manager") as mock_config,
+        patch("clockman.utils.notifier.get_config_manager") as mock_config,
         patch.dict(os.environ, {}, clear=True),  # Clear DISPLAY and WAYLAND_DISPLAY
     ):
         mock_config_instance = MagicMock()
@@ -64,7 +64,7 @@ async def test_notify_headless_environment() -> None:
         mock_config_instance.should_fallback_to_log.return_value = True
         mock_config.return_value = mock_config_instance
 
-        with patch("trackit.utils.notifier.logger") as mock_logger:
+        with patch("clockman.utils.notifier.logger") as mock_logger:
             result = await notifier.notify("Test Title", "Test Message")
 
             assert result == "Headless or CI environment"
@@ -77,8 +77,8 @@ async def test_notify_headless_environment() -> None:
 async def test_notify_handles_exception() -> None:
     """Test that notify handles exceptions gracefully."""
     with (
-        patch("trackit.utils.notifier._get_notifier") as mock_get_notifier,
-        patch("trackit.utils.notifier.get_config_manager") as mock_config,
+        patch("clockman.utils.notifier._get_notifier") as mock_get_notifier,
+        patch("clockman.utils.notifier.get_config_manager") as mock_config,
         patch.dict(os.environ, {"DISPLAY": ":0"}, clear=True),
     ):
         # Setup mocks
@@ -92,7 +92,7 @@ async def test_notify_handles_exception() -> None:
         mock_config_instance.should_fallback_to_log.return_value = True
         mock_config.return_value = mock_config_instance
 
-        with patch("trackit.utils.notifier.logger") as mock_logger:
+        with patch("clockman.utils.notifier.logger") as mock_logger:
             result = await notifier.notify("Test Title", "Test Message")
 
             assert result == "Failed to send notification: Test error"
@@ -106,7 +106,7 @@ async def test_notify_handles_exception() -> None:
 
 def test_notify_sync_success() -> None:
     """Test that notify_sync works correctly in normal conditions."""
-    with patch("trackit.utils.notifier.asyncio.run") as mock_run:
+    with patch("clockman.utils.notifier.asyncio.run") as mock_run:
         mock_run.return_value = None
 
         result = notifier.notify_sync("Sync Title", "Sync Message")
@@ -119,10 +119,10 @@ def test_notify_sync_handles_runtime_error() -> None:
     """Test notify_sync fallback when RuntimeError occurs (nested event loop)."""
     with (
         patch(
-            "trackit.utils.notifier.asyncio.get_running_loop",
+            "clockman.utils.notifier.asyncio.get_running_loop",
             side_effect=RuntimeError("No running loop"),
         ),
-        patch("trackit.utils.notifier.asyncio.run") as mock_run,
+        patch("clockman.utils.notifier.asyncio.run") as mock_run,
     ):
         mock_run.return_value = None
 
@@ -135,9 +135,9 @@ def test_notify_sync_handles_runtime_error() -> None:
 def test_notify_sync_in_async_context() -> None:
     """Test notify_sync when called from async context (uses thread executor)."""
     with (
-        patch("trackit.utils.notifier.asyncio.get_running_loop") as mock_get_loop,
+        patch("clockman.utils.notifier.asyncio.get_running_loop") as mock_get_loop,
         patch("concurrent.futures.ThreadPoolExecutor") as mock_executor,
-        patch("trackit.utils.notifier.notify") as mock_notify,
+        patch("clockman.utils.notifier.notify") as mock_notify,
     ):
         # Mock running loop exists
         mock_get_loop.return_value = MagicMock()
@@ -161,8 +161,8 @@ def test_notify_sync_in_async_context() -> None:
 def test_notify_task_start() -> None:
     """Test task start notification helper."""
     with (
-        patch("trackit.utils.notifier.get_config_manager") as mock_config,
-        patch("trackit.utils.notifier.notify_sync") as mock_notify_sync,
+        patch("clockman.utils.notifier.get_config_manager") as mock_config,
+        patch("clockman.utils.notifier.notify_sync") as mock_notify_sync,
     ):
         mock_config_instance = MagicMock()
         mock_config_instance.should_notify_task_start.return_value = True
@@ -173,13 +173,13 @@ def test_notify_task_start() -> None:
 
         assert result is None
         mock_notify_sync.assert_called_once_with(
-            "TrackIt - Task Started", "Started working on: Test Task [tag1, tag2]"
+            "Clockman - Task Started", "Started working on: Test Task [tag1, tag2]"
         )
 
 
 def test_notify_task_start_disabled() -> None:
     """Test task start notification when disabled in config."""
-    with patch("trackit.utils.notifier.get_config_manager") as mock_config:
+    with patch("clockman.utils.notifier.get_config_manager") as mock_config:
         mock_config_instance = MagicMock()
         mock_config_instance.should_notify_task_start.return_value = False
         mock_config.return_value = mock_config_instance
@@ -192,8 +192,8 @@ def test_notify_task_start_disabled() -> None:
 def test_notify_task_stop() -> None:
     """Test task stop notification helper."""
     with (
-        patch("trackit.utils.notifier.get_config_manager") as mock_config,
-        patch("trackit.utils.notifier.notify_sync") as mock_notify_sync,
+        patch("clockman.utils.notifier.get_config_manager") as mock_config,
+        patch("clockman.utils.notifier.notify_sync") as mock_notify_sync,
     ):
         mock_config_instance = MagicMock()
         mock_config_instance.should_notify_task_stop.return_value = True
@@ -204,15 +204,15 @@ def test_notify_task_stop() -> None:
 
         assert result is None
         mock_notify_sync.assert_called_once_with(
-            "TrackIt - Task Completed", "Completed: Test Task [tag1]\nDuration: 2h 30m"
+            "Clockman - Task Completed", "Completed: Test Task [tag1]\nDuration: 2h 30m"
         )
 
 
 def test_notify_error() -> None:
     """Test error notification helper."""
     with (
-        patch("trackit.utils.notifier.get_config_manager") as mock_config,
-        patch("trackit.utils.notifier.notify_sync") as mock_notify_sync,
+        patch("clockman.utils.notifier.get_config_manager") as mock_config,
+        patch("clockman.utils.notifier.notify_sync") as mock_notify_sync,
     ):
         mock_config_instance = MagicMock()
         mock_config_instance.should_notify_errors.return_value = True
@@ -223,5 +223,5 @@ def test_notify_error() -> None:
 
         assert result is None
         mock_notify_sync.assert_called_once_with(
-            "TrackIt - Error", "Something went wrong"
+            "Clockman - Error", "Something went wrong"
         )

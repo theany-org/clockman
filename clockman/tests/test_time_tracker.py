@@ -1,5 +1,5 @@
 """
-Tests for time_tracker core module (trackit.core.time_tracker).
+Tests for time_tracker core module (clockman.core.time_tracker).
 
 This module tests the core time tracking functionality including session management,
 error handling, and business logic.
@@ -13,15 +13,15 @@ from uuid import UUID, uuid4
 
 import pytest
 
-from trackit.core.time_tracker import (
+from clockman.core.time_tracker import (
     ActiveSessionError,
     SessionNotFoundError,
     TimeTracker,
     TimeTrackingError,
 )
-from trackit.db.models import DailyStats, ProjectStats
-from trackit.db.repository import SessionRepository
-from trackit.db.schema import DatabaseManager
+from clockman.db.models import DailyStats, ProjectStats
+from clockman.db.repository import SessionRepository
+from clockman.db.schema import DatabaseManager
 
 
 class TestTimeTracker:
@@ -221,7 +221,7 @@ class TestTimeTracker:
         target_date = date(2024, 1, 1)
 
         # Create sessions on target date
-        with patch("trackit.core.time_tracker.datetime") as mock_datetime:
+        with patch("clockman.core.time_tracker.datetime") as mock_datetime:
             # Create a time sequence for start/stop operations
             time_sequence = [
                 datetime(2024, 1, 1, 10, 0, 0, tzinfo=timezone.utc),  # start task 1
@@ -254,7 +254,7 @@ class TestTimeTracker:
         end_date = date(2024, 1, 3)
 
         # Create sessions across different dates
-        with patch("trackit.core.time_tracker.datetime") as mock_datetime:
+        with patch("clockman.core.time_tracker.datetime") as mock_datetime:
             # Create a time sequence for start/stop operations across multiple dates
             time_sequence = [
                 # Session 1 on 2024-01-01
@@ -356,7 +356,7 @@ class TestTimeTracker:
         # Arrange
         target_date = date(2024, 1, 1)
 
-        with patch("trackit.core.time_tracker.datetime") as mock_datetime:
+        with patch("clockman.core.time_tracker.datetime") as mock_datetime:
             # Create a time sequence for start/stop operations
             time_sequence = [
                 datetime(2024, 1, 1, 10, 0, 0, tzinfo=timezone.utc),  # start task 1

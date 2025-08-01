@@ -1,5 +1,5 @@
 """
-Core time tracking functionality for TrackIt.
+Core time tracking functionality for Clockman.
 
 This module contains the main TimeTracker class that orchestrates session management.
 """
@@ -46,7 +46,7 @@ class TimeTracker:
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
         # Initialize database
-        db_path = self.data_dir / "trackit.db"
+        db_path = self.data_dir / "clockman.db"
         self.db_manager = DatabaseManager(db_path)
         self.db_manager.initialize_database()
 

@@ -90,20 +90,20 @@ jobs:
       #   env:
       #     CI: "true"
       #     DISPLAY: ":99"
-      #     TRACKIT_HEADLESS: "true"
+      #     CLOCKMAN_HEADLESS: "true"
       #   run: |
       #     # Start virtual display
       #     Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
       #     sleep 1
 
-      #     pytest --cov=trackit --cov-fail-under=90
+      #     pytest --cov=clockman --cov-fail-under=90
 
       # - name: Run quality checks
       #   run: |
-      #     black --check trackit/
-      #     isort --check-only trackit/
-      #     flake8 trackit/
-      #     mypy trackit/
+      #     black --check clockman/
+      #     isort --check-only clockman/
+      #     flake8 clockman/
+      #     mypy clockman/
 
   build:
     name: Build Distribution
@@ -183,7 +183,7 @@ jobs:
         shell: bash
         env:
           CI: "true"
-          TRACKIT_HEADLESS: "true"
+          CLOCKMAN_HEADLESS: "true"
           DISPLAY: ":99"
         run: |
           # Start virtual display for Linux
@@ -234,28 +234,28 @@ jobs:
             git log --pretty=format:"- %s (%an)" $PREVIOUS_TAG..HEAD >> release_notes.md
           else
             echo "### Initial Release" >> release_notes.md
-            echo "- First release of TrackIt CLI time tracker" >> release_notes.md
+            echo "- First release of Clockman CLI time tracker" >> release_notes.md
           fi
 
           echo "" >> release_notes.md
           echo "## Installation" >> release_notes.md
           echo "" >> release_notes.md
           echo "\`\`\`bash" >> release_notes.md
-          echo "pip install trackit==${{ needs.validate-release.outputs.version }}" >> release_notes.md
+          echo "pip install clockman==${{ needs.validate-release.outputs.version }}" >> release_notes.md
           echo "\`\`\`" >> release_notes.md
           echo "" >> release_notes.md
           echo "## Full Changelog" >> release_notes.md
           if [ -n "$PREVIOUS_TAG" ]; then
-            echo "**Full Changelog**: https://github.com/theany-org/trackit/compare/$PREVIOUS_TAG...${{ needs.validate-release.outputs.tag }}" >> release_notes.md
+            echo "**Full Changelog**: https://github.com/theany-org/clockman/compare/$PREVIOUS_TAG...${{ needs.validate-release.outputs.tag }}" >> release_notes.md
           else
-            echo "**Full Changelog**: https://github.com/theany-org/trackit/commits/${{ needs.validate-release.outputs.tag }}" >> release_notes.md
+            echo "**Full Changelog**: https://github.com/theany-org/clockman/commits/${{ needs.validate-release.outputs.tag }}" >> release_notes.md
           fi
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.validate-release.outputs.tag }}
-          name: TrackIt ${{ needs.validate-release.outputs.version }}
+          name: Clockman ${{ needs.validate-release.outputs.version }}
           body_path: release_notes.md
           files: |
             dist/*.whl
@@ -313,14 +313,14 @@ jobs:
         shell: bash
         run: |
           echo "## Release Summary" >> $GITHUB_STEP_SUMMARY
-          echo "### ✅ TrackIt ${{ needs.validate-release.outputs.version }} Released Successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "### ✅ Clockman ${{ needs.validate-release.outputs.version }} Released Successfully!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**GitHub Release**: https://github.com/theany-org/trackit/releases/tag/${{ needs.validate-release.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
-          echo "**PyPI Package**: https://pypi.org/project/trackit/${{ needs.validate-release.outputs.version }}/" >> $GITHUB_STEP_SUMMARY
+          echo "**GitHub Release**: https://github.com/theany-org/clockman/releases/tag/${{ needs.validate-release.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "**PyPI Package**: https://pypi.org/project/clockman/${{ needs.validate-release.outputs.version }}/" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Installation Command:" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "pip install trackit==${{ needs.validate-release.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "pip install clockman==${{ needs.validate-release.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
       - name: Notify about documentation updates

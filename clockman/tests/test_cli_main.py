@@ -1,5 +1,5 @@
 """
-Tests for CLI main module (trackit.cli.main).
+Tests for CLI main module (clockman.cli.main).
 
 This module tests the command-line interface functionality including all commands,
 error handling, and output formatting.
@@ -14,11 +14,11 @@ from uuid import uuid4
 import pytest
 from typer.testing import CliRunner
 
-from trackit.cli.main import app, get_tracker
-from trackit.core.time_tracker import (
+from clockman.cli.main import app, get_tracker
+from clockman.core.time_tracker import (
     TimeTracker,
 )
-from trackit.db.models import TimeSession
+from clockman.db.models import TimeSession
 
 
 class TestCLIMain:
@@ -28,7 +28,7 @@ class TestCLIMain:
         """Set up test fixtures."""
         self.runner = CliRunner()
 
-    @patch("trackit.cli.main.get_tracker")
+    @patch("clockman.cli.main.get_tracker")
     def test_start_command_success(self, mock_get_tracker: Mock) -> None:
         """Test successful start command."""
         # Arrange
@@ -47,7 +47,7 @@ class TestCLIMain:
             task_name="Test Task", tags=[], description=None
         )
 
-    @patch("trackit.cli.main.get_tracker")
+    @patch("clockman.cli.main.get_tracker")
     def test_start_command_with_tags_and_description(
         self, mock_get_tracker: Mock
     ) -> None:
@@ -82,7 +82,7 @@ class TestCLIMain:
             task_name="Test Task", tags=["tag1", "tag2"], description="Test description"
         )
 
-    @patch("trackit.cli.main.get_tracker")
+    @patch("clockman.cli.main.get_tracker")
     def test_start_command_stops_active_session(self, mock_get_tracker: Mock) -> None:
         """Test start command stops existing active session."""
         # Arrange
@@ -108,7 +108,7 @@ class TestCLIMain:
         mock_tracker.stop_session.assert_called_once()
         mock_tracker.start_session.assert_called_once()
 
-    @patch("trackit.cli.main.get_tracker")
+    @patch("clockman.cli.main.get_tracker")
     def test_start_command_error_handling(self, mock_get_tracker: Mock) -> None:
         """Test start command error handling."""
         # Arrange
@@ -123,7 +123,7 @@ class TestCLIMain:
         assert result.exit_code == 1
         assert "Error starting task: Database error" in result.stdout
 
-    @patch("trackit.cli.main.get_tracker")
+    @patch("clockman.cli.main.get_tracker")
     def test_stop_command_success(self, mock_get_tracker: Mock) -> None:
         """Test successful stop command."""
         # Arrange
@@ -148,7 +148,7 @@ class TestCLIMain:
         assert "Duration:" in result.stdout
         mock_tracker.stop_session.assert_called_once()
 
-    @patch("trackit.cli.main.get_tracker")
+    @patch("clockman.cli.main.get_tracker")
     def test_stop_command_no_active_session(self, mock_get_tracker: Mock) -> None:
         """Test stop command with no active session."""
         # Arrange
@@ -164,7 +164,7 @@ class TestCLIMain:
         assert "No active session to stop" in result.stdout
         mock_tracker.stop_session.assert_not_called()
 
-    @patch("trackit.cli.main.get_tracker")
+    @patch("clockman.cli.main.get_tracker")
     def test_stop_command_error_handling(self, mock_get_tracker: Mock) -> None:
         """Test stop command error handling."""
         # Arrange
@@ -179,7 +179,7 @@ class TestCLIMain:
         assert result.exit_code == 1
         assert "Error stopping session: Database error" in result.stdout
 
-    @patch("trackit.cli.main.get_tracker")
+    @patch("clockman.cli.main.get_tracker")
     def test_status_command_with_active_session(self, mock_get_tracker: Mock) -> None:
         """Test status command with active session."""
         # Arrange
@@ -205,7 +205,7 @@ class TestCLIMain:
         assert "Test description" in result.stdout
         assert any(tag_set in result.stdout for tag_set in ["tag1, tag2", "tag2, tag1"])
 
-    @patch("trackit.cli.main.get_tracker")
+    @patch("clockman.cli.main.get_tracker")
     def test_status_command_no_active_session(self, mock_get_tracker: Mock) -> None:
         """Test status command with no active session."""
         # Arrange
@@ -220,7 +220,7 @@ class TestCLIMain:
         assert result.exit_code == 0
         assert "No active session" in result.stdout
 
-    @patch("trackit.cli.main.get_tracker")
+    @patch("clockman.cli.main.get_tracker")
     def test_status_command_error_handling(self, mock_get_tracker: Mock) -> None:
         """Test status command error handling."""
         # Arrange
@@ -235,7 +235,7 @@ class TestCLIMain:
         assert result.exit_code == 1
         assert "Error getting status: Database error" in result.stdout
 
-    @patch("trackit.cli.main.get_tracker")
+    @patch("clockman.cli.main.get_tracker")
     @patch("datetime.date")
     def test_log_command_today_with_entries(
         self, mock_date: Mock, mock_get_tracker: Mock
@@ -280,7 +280,7 @@ class TestCLIMain:
         assert "Active" in result.stdout
         assert "Total:" in result.stdout
 
-    @patch("trackit.cli.main.get_tracker")
+    @patch("clockman.cli.main.get_tracker")
     def test_log_command_recent_entries(self, mock_get_tracker: Mock) -> None:
         """Test log command showing recent entries."""
         # Arrange
@@ -308,7 +308,7 @@ class TestCLIMain:
         assert "Today's Time Entries" in result.stdout
         assert "Recent Task" in result.stdout
 
-    @patch("trackit.cli.main.get_tracker")
+    @patch("clockman.cli.main.get_tracker")
     def test_log_command_no_entries(self, mock_get_tracker: Mock) -> None:
         """Test log command with no entries."""
         # Arrange
@@ -323,7 +323,7 @@ class TestCLIMain:
         assert result.exit_code == 0
         assert "No entries found" in result.stdout
 
-    @patch("trackit.cli.main.get_tracker")
+    @patch("clockman.cli.main.get_tracker")
     def test_log_command_error_handling(self, mock_get_tracker: Mock) -> None:
         """Test log command error handling."""
         # Arrange
@@ -338,7 +338,7 @@ class TestCLIMain:
         assert result.exit_code == 1
         assert "Error showing log: Database error" in result.stdout
 
-    @patch("trackit.__version__", "1.0.0")
+    @patch("clockman.__version__", "1.0.0")
     def test_version_command(self) -> None:
         """Test version command."""
         # Act
@@ -346,7 +346,7 @@ class TestCLIMain:
 
         # Assert
         assert result.exit_code == 0
-        assert "TrackIt version 1.0.0" in result.stdout
+        assert "Clockman version 1.0.0" in result.stdout
 
     def test_version_callback(self) -> None:
         """Test version callback option."""
@@ -355,9 +355,9 @@ class TestCLIMain:
 
         # Assert
         assert result.exit_code == 0
-        assert "TrackIt version" in result.stdout
+        assert "Clockman version" in result.stdout
 
-    @patch("trackit.cli.main.get_config_manager")
+    @patch("clockman.cli.main.get_config_manager")
     def test_get_tracker_initialization(self, mock_get_config_manager: Mock) -> None:
         """Test tracker initialization."""
         # Arrange
@@ -373,7 +373,7 @@ class TestCLIMain:
         assert isinstance(tracker, TimeTracker)
         mock_get_config_manager.assert_called_once()
 
-    @patch("trackit.cli.main.get_config_manager")
+    @patch("clockman.cli.main.get_config_manager")
     def test_get_tracker_singleton(self, mock_get_config_manager: Mock) -> None:
         """Test that get_tracker returns the same instance."""
         # Arrange
@@ -382,9 +382,9 @@ class TestCLIMain:
         mock_get_config_manager.return_value = mock_config
 
         # Clear any existing tracker
-        import trackit.cli.main
+        import clockman.cli.main
 
-        trackit.cli.main.tracker = None
+        clockman.cli.main.tracker = None
 
         # Act
         tracker1 = get_tracker()
@@ -410,8 +410,8 @@ class TestCLIIntegration:
 
         # Assert
         assert result.exit_code == 0
-        assert "TrackIt: Terminal-based time tracking for developers" in result.stdout
-        assert "TrackIt" in result.stdout
+        assert "Clockman: Terminal-based time tracking for developers" in result.stdout
+        assert "Clockman" in result.stdout
         assert "start" in result.stdout
         assert "stop" in result.stdout
         assert "status" in result.stdout
@@ -466,7 +466,7 @@ class TestCLIIntegration:
 
         # Assert
         assert result.exit_code == 0
-        assert "Show TrackIt version information" in result.stdout
+        assert "Show Clockman version information" in result.stdout
 
 
 @pytest.mark.unit
@@ -486,7 +486,7 @@ class TestCLICommandValidation:
         assert result.exit_code != 0
         assert "Missing argument" in result.output or "Usage:" in result.output
 
-    @patch("trackit.cli.main.get_tracker")
+    @patch("clockman.cli.main.get_tracker")
     def test_start_command_empty_task_name_handled(
         self, mock_get_tracker: Mock
     ) -> None:

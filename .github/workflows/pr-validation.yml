@@ -63,7 +63,7 @@ jobs:
         run: |
           # Check if any files in core/ or cli/ have been modified
           CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
-          BREAKING_PATTERNS="trackit/core/|trackit/cli/main.py|trackit/db/models.py"
+          BREAKING_PATTERNS="clockman/core/|clockman/cli/main.py|clockman/db/models.py"
 
           if echo "$CHANGED_FILES" | grep -E "$BREAKING_PATTERNS"; then
             echo "::warning::This PR modifies core functionality. Please ensure backward compatibility."
@@ -74,7 +74,7 @@ jobs:
       - name: Check test coverage for new code
         run: |
           # Run tests with coverage for the current branch
-          pytest --cov=trackit --cov-report=xml --cov-fail-under=90
+          pytest --cov=clockman --cov-report=xml --cov-fail-under=90
 
           # Generate coverage report for comparison
           coverage report --show-missing

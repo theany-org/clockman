@@ -1,5 +1,5 @@
 """
-Main CLI entry point for TrackIt.
+Main CLI entry point for Clockman.
 
 This module provides the primary command-line interface using typer.
 """
@@ -17,8 +17,8 @@ from ..utils.notifier import notify_sync
 
 # Create the main typer app
 app = typer.Typer(
-    name="tracker",
-    help="TrackIt: Terminal-based time tracking for developers",
+    name="clockman",
+    help="Clockman: Terminal-based time tracking for developers",
     add_completion=False,
 )
 
@@ -60,7 +60,7 @@ def start(
                 f"[yellow]Stopped previous task: {active_session.task_name}[/yellow]"
             )
             notify_sync(
-                title="TrackIt Notification",
+                title="Clockman Notification",
                 message=f"Stopped previous task: {active_session.task_name}",
             )
 
@@ -76,7 +76,7 @@ def start(
             console.print(f"[dim]Description: {description}[/dim]")
         console.print(f"[dim]Session ID: {session_id}[/dim]")
         notify_sync(
-            title="TrackIt Notification",
+            title="Clockman Notification",
             message=f"Started tracking: {task_name}",
         )
 
@@ -95,7 +95,7 @@ def stop() -> None:
         if not active_session:
             console.print("[yellow]No active session to stop[/yellow]")
             notify_sync(
-                title="TrackIt Notification",
+                title="Clockman Notification",
                 message="No active session to stop",
             )
             return
@@ -109,7 +109,7 @@ def stop() -> None:
             )
             console.print(f"[dim]Duration: {format_duration(duration)}[/dim]")
             notify_sync(
-                title="TrackIt Notification",
+                title="Clockman Notification",
                 message=f"Stopped: {stopped_session.task_name} (Duration: {format_duration(duration)})",
             )
     except Exception as e:
@@ -223,10 +223,10 @@ def log(
 
 @app.command()
 def version() -> None:
-    """Show TrackIt version information."""
+    """Show Clockman version information."""
     from .. import __version__
 
-    console.print(f"TrackIt version {__version__}")
+    console.print(f"Clockman version {__version__}")
 
 
 def version_callback(value: bool) -> None:
@@ -248,7 +248,7 @@ def main(
     ),
 ) -> None:
     """
-    TrackIt: Terminal-based time tracking for developers.
+    Clockman: Terminal-based time tracking for developers.
 
     A privacy-focused, offline-first time tracking CLI application.
     """

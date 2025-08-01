@@ -1,5 +1,5 @@
 """
-Tests for database schema management (trackit.db.schema).
+Tests for database schema management (clockman.db.schema).
 
 This module tests database initialization, migrations, and schema operations.
 """
@@ -12,7 +12,7 @@ from unittest.mock import patch
 
 import pytest
 
-from trackit.db.schema import (
+from clockman.db.schema import (
     CREATE_INDEXES,
     CREATE_SCHEMA_VERSION_TABLE,
     CREATE_SESSIONS_TABLE,
@@ -357,7 +357,7 @@ class TestDatabaseManager:
         with db_manager.get_connection() as conn:
             db_manager._migrate_database(conn, 0, 1)
 
-    @patch("trackit.db.schema.SCHEMA_VERSION", 2)
+    @patch("clockman.db.schema.SCHEMA_VERSION", 2)
     def test_initialize_database_with_migration_needed(
         self, test_db_path: Path
     ) -> None:

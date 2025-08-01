@@ -1,5 +1,5 @@
 """
-Configuration management for TrackIt.
+Configuration management for Clockman.
 
 This module handles user configuration, data directories, and settings.
 """
@@ -12,11 +12,11 @@ from platformdirs import user_config_dir, user_data_dir
 
 
 class ConfigManager:
-    """Manages TrackIt configuration and data directories."""
+    """Manages Clockman configuration and data directories."""
 
     def __init__(self) -> None:
         """Initialize configuration manager."""
-        self.app_name = "trackit"
+        self.app_name = "clockman"
         self.config_dir = Path(user_config_dir(self.app_name))
         self.data_dir = Path(user_data_dir(self.app_name))
         self.config_file = self.config_dir / "config.json"

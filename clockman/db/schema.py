@@ -1,5 +1,5 @@
 """
-Database schema definition for TrackIt.
+Database schema definition for Clockman.
 
 This module contains the SQL schema and migration logic for the SQLite database.
 """

@@ -1,4 +1,4 @@
-"""Utility functions for TrackIt."""
+"""Utility functions for Clockman."""
 
 from .notifier import (
     notify,

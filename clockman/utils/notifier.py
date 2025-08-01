@@ -1,5 +1,5 @@
 """
-Desktop notification service for TrackIt.
+Desktop notification service for Clockman.
 
 This module provides desktop notification functionality with proper error handling,
 logging integration, and configuration support.
@@ -24,7 +24,7 @@ def _get_notifier() -> DesktopNotifier:
     """Get or create the global DesktopNotifier instance."""
     global _notifier
     if _notifier is None:
-        _notifier = DesktopNotifier(app_name="TrackIt")
+        _notifier = DesktopNotifier(app_name="Clockman")
     return _notifier
 
 
@@ -56,7 +56,7 @@ async def notify(title: str, message: str) -> Optional[str]:
     is_headless = (
         (not os.environ.get("DISPLAY") and not os.environ.get("WAYLAND_DISPLAY"))
         or os.environ.get("CI") == "true"
-        or os.environ.get("TRACKIT_HEADLESS") == "true"
+        or os.environ.get("CLOCKMAN_HEADLESS") == "true"
     )
 
     if is_headless:
@@ -160,7 +160,7 @@ def notify_task_start(task_name: str, tags: Optional[list] = None) -> Optional[s
 
     tag_str = f" [{', '.join(tags)}]" if tags else ""
     message = f"Started working on: {task_name}{tag_str}"
-    return notify_sync("TrackIt - Task Started", message)
+    return notify_sync("Clockman - Task Started", message)
 
 
 def notify_task_stop(
@@ -183,7 +183,7 @@ def notify_task_stop(
 
     tag_str = f" [{', '.join(tags)}]" if tags else ""
     message = f"Completed: {task_name}{tag_str}\nDuration: {duration}"
-    return notify_sync("TrackIt - Task Completed", message)
+    return notify_sync("Clockman - Task Completed", message)
 
 
 def notify_error(error_message: str) -> Optional[str]:
@@ -200,4 +200,4 @@ def notify_error(error_message: str) -> Optional[str]:
     if not config.should_notify_errors():
         return None
 
-    return notify_sync("TrackIt - Error", error_message)
+    return notify_sync("Clockman - Error", error_message)

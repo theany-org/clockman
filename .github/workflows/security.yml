@@ -69,8 +69,8 @@ jobs:
 
       - name: Run bandit security linter
         run: |
-          bandit -r trackit/ -f json -o bandit-report.json || true
-          bandit -r trackit/ -ll -i || echo "Bandit analysis completed with findings"
+          bandit -r clockman/ -f json -o bandit-report.json || true
+          bandit -r clockman/ -ll -i || echo "Bandit analysis completed with findings"
 
       - name: Upload bandit report
         if: always()
@@ -243,7 +243,7 @@ jobs:
 
       - name: Run Semgrep (CodeQL Alternative)
         run: |
-          semgrep --config=auto --json --output=semgrep-results.json trackit/ || true
+          semgrep --config=auto --json --output=semgrep-results.json clockman/ || true
           echo "Static analysis completed with Semgrep (CodeQL alternative)"
 
       - name: Upload Semgrep results

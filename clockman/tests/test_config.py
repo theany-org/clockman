@@ -1,5 +1,5 @@
 """
-Tests for configuration management (trackit.utils.config).
+Tests for configuration management (clockman.utils.config).
 
 This module tests configuration loading, validation, and management functionality.
 """
@@ -12,7 +12,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from trackit.utils.config import ConfigManager, get_config_manager
+from clockman.utils.config import ConfigManager, get_config_manager
 
 
 class TestConfigManager:
@@ -22,8 +22,8 @@ class TestConfigManager:
         """Test that ConfigManager creates config and data directories."""
         with tempfile.TemporaryDirectory() as temp_dir:
             with (
-                patch("trackit.utils.config.user_config_dir") as mock_config_dir,
-                patch("trackit.utils.config.user_data_dir") as mock_data_dir,
+                patch("clockman.utils.config.user_config_dir") as mock_config_dir,
+                patch("clockman.utils.config.user_data_dir") as mock_data_dir,
             ):
 
                 mock_config_dir.return_value = str(Path(temp_dir) / "config")
@@ -44,8 +44,8 @@ class TestConfigManager:
         """Test default configuration is created on fresh install."""
         with tempfile.TemporaryDirectory() as temp_dir:
             with (
-                patch("trackit.utils.config.user_config_dir") as mock_config_dir,
-                patch("trackit.utils.config.user_data_dir") as mock_data_dir,
+                patch("clockman.utils.config.user_config_dir") as mock_config_dir,
+                patch("clockman.utils.config.user_data_dir") as mock_data_dir,
             ):
 
                 mock_config_dir.return_value = str(Path(temp_dir) / "config")
@@ -79,8 +79,8 @@ class TestConfigManager:
                 json.dump(existing_config, f)
 
             with (
-                patch("trackit.utils.config.user_config_dir") as mock_config_dir,
-                patch("trackit.utils.config.user_data_dir") as mock_data_dir,
+                patch("clockman.utils.config.user_config_dir") as mock_config_dir,
+                patch("clockman.utils.config.user_data_dir") as mock_data_dir,
             ):
 
                 mock_config_dir.return_value = str(config_dir)
@@ -110,8 +110,8 @@ class TestConfigManager:
                 f.write("invalid json content {")
 
             with (
-                patch("trackit.utils.config.user_config_dir") as mock_config_dir,
-                patch("trackit.utils.config.user_data_dir") as mock_data_dir,
+                patch("clockman.utils.config.user_config_dir") as mock_config_dir,
+                patch("clockman.utils.config.user_data_dir") as mock_data_dir,
             ):
 
                 mock_config_dir.return_value = str(config_dir)
@@ -128,8 +128,8 @@ class TestConfigManager:
         """Test getting simple configuration value."""
         with tempfile.TemporaryDirectory() as temp_dir:
             with (
-                patch("trackit.utils.config.user_config_dir") as mock_config_dir,
-                patch("trackit.utils.config.user_data_dir") as mock_data_dir,
+                patch("clockman.utils.config.user_config_dir") as mock_config_dir,
+                patch("clockman.utils.config.user_data_dir") as mock_data_dir,
             ):
                 mock_config_dir.return_value = str(Path(temp_dir) / "config")
                 mock_data_dir.return_value = str(Path(temp_dir) / "data")
@@ -144,8 +144,8 @@ class TestConfigManager:
         """Test getting nested configuration value."""
         with tempfile.TemporaryDirectory() as temp_dir:
             with (
-                patch("trackit.utils.config.user_config_dir") as mock_config_dir,
-                patch("trackit.utils.config.user_data_dir") as mock_data_dir,
+                patch("clockman.utils.config.user_config_dir") as mock_config_dir,
+                patch("clockman.utils.config.user_data_dir") as mock_data_dir,
             ):
                 mock_config_dir.return_value = str(Path(temp_dir) / "config")
                 mock_data_dir.return_value = str(Path(temp_dir) / "data")
@@ -205,7 +205,7 @@ class TestConfigManager:
         # Assert
         assert config_manager.get("new_section.new_key") == "new_value"
 
-    @patch("trackit.utils.config.ConfigManager._save_config")
+    @patch("clockman.utils.config.ConfigManager._save_config")
     def test_set_saves_config(self, mock_save: Mock) -> None:
         """Test that set method saves configuration."""
         config_manager = ConfigManager()
@@ -230,7 +230,7 @@ class TestConfigManager:
     def test_get_data_dir_custom_path(self) -> None:
         """Test getting custom data directory from config."""
         config_manager = ConfigManager()
-        custom_path = "/tmp/custom_trackit_data"
+        custom_path = "/tmp/custom_clockman_data"
 
         # Act
         config_manager.set("data_directory", custom_path)
@@ -255,8 +255,8 @@ class TestConfigManager:
         """Test getting date format."""
         with tempfile.TemporaryDirectory() as temp_dir:
             with (
-                patch("trackit.utils.config.user_config_dir") as mock_config_dir,
-                patch("trackit.utils.config.user_data_dir") as mock_data_dir,
+                patch("clockman.utils.config.user_config_dir") as mock_config_dir,
+                patch("clockman.utils.config.user_data_dir") as mock_data_dir,
             ):
                 mock_config_dir.return_value = str(Path(temp_dir) / "config")
                 mock_data_dir.return_value = str(Path(temp_dir) / "data")
@@ -274,8 +274,8 @@ class TestConfigManager:
         """Test getting time format."""
         with tempfile.TemporaryDirectory() as temp_dir:
             with (
-                patch("trackit.utils.config.user_config_dir") as mock_config_dir,
-                patch("trackit.utils.config.user_data_dir") as mock_data_dir,
+                patch("clockman.utils.config.user_config_dir") as mock_config_dir,
+                patch("clockman.utils.config.user_data_dir") as mock_data_dir,
             ):
                 mock_config_dir.return_value = str(Path(temp_dir) / "config")
                 mock_data_dir.return_value = str(Path(temp_dir) / "data")
@@ -293,8 +293,8 @@ class TestConfigManager:
         """Test getting UI element colors."""
         with tempfile.TemporaryDirectory() as temp_dir:
             with (
-                patch("trackit.utils.config.user_config_dir") as mock_config_dir,
-                patch("trackit.utils.config.user_data_dir") as mock_data_dir,
+                patch("clockman.utils.config.user_config_dir") as mock_config_dir,
+                patch("clockman.utils.config.user_data_dir") as mock_data_dir,
             ):
                 mock_config_dir.return_value = str(Path(temp_dir) / "config")
                 mock_data_dir.return_value = str(Path(temp_dir) / "data")
@@ -479,8 +479,8 @@ class TestConfigManager:
                 json.dump({"test": "value"}, f)
 
             with (
-                patch("trackit.utils.config.user_config_dir") as mock_config_dir,
-                patch("trackit.utils.config.user_data_dir") as mock_data_dir,
+                patch("clockman.utils.config.user_config_dir") as mock_config_dir,
+                patch("clockman.utils.config.user_data_dir") as mock_data_dir,
                 patch("builtins.open", side_effect=IOError("Permission denied")),
                 patch("builtins.print") as mock_print,
             ):
@@ -499,8 +499,8 @@ class TestConfigManager:
         """Test default configuration has expected structure."""
         with tempfile.TemporaryDirectory() as temp_dir:
             with (
-                patch("trackit.utils.config.user_config_dir") as mock_config_dir,
-                patch("trackit.utils.config.user_data_dir") as mock_data_dir,
+                patch("clockman.utils.config.user_config_dir") as mock_config_dir,
+                patch("clockman.utils.config.user_data_dir") as mock_data_dir,
             ):
                 mock_config_dir.return_value = str(Path(temp_dir) / "config")
                 mock_data_dir.return_value = str(Path(temp_dir) / "data")
@@ -543,9 +543,9 @@ class TestGlobalConfigManager:
     def test_get_config_manager_singleton(self) -> None:
         """Test that get_config_manager returns singleton instance."""
         # Reset global instance
-        import trackit.utils.config
+        import clockman.utils.config
 
-        trackit.utils.config._config_manager = None
+        clockman.utils.config._config_manager = None
 
         # Act
         config1 = get_config_manager()
@@ -558,11 +558,11 @@ class TestGlobalConfigManager:
     def test_get_config_manager_initializes_once(self) -> None:
         """Test that get_config_manager initializes only once."""
         # Reset global instance
-        import trackit.utils.config
+        import clockman.utils.config
 
-        trackit.utils.config._config_manager = None
+        clockman.utils.config._config_manager = None
 
-        with patch("trackit.utils.config.ConfigManager") as mock_config_class:
+        with patch("clockman.utils.config.ConfigManager") as mock_config_class:
             mock_instance = Mock()
             mock_config_class.return_value = mock_instance
 
@@ -584,8 +584,8 @@ class TestConfigManagerIntegration:
         """Test complete configuration workflow."""
         with tempfile.TemporaryDirectory() as temp_dir:
             with (
-                patch("trackit.utils.config.user_config_dir") as mock_config_dir,
-                patch("trackit.utils.config.user_data_dir") as mock_data_dir,
+                patch("clockman.utils.config.user_config_dir") as mock_config_dir,
+                patch("clockman.utils.config.user_data_dir") as mock_data_dir,
             ):
 
                 mock_config_dir.return_value = str(Path(temp_dir) / "config")
@@ -623,8 +623,8 @@ class TestConfigManagerIntegration:
             data_dir = Path(temp_dir) / "data"
 
             with (
-                patch("trackit.utils.config.user_config_dir") as mock_config_dir,
-                patch("trackit.utils.config.user_data_dir") as mock_data_dir,
+                patch("clockman.utils.config.user_config_dir") as mock_config_dir,
+                patch("clockman.utils.config.user_data_dir") as mock_data_dir,
             ):
 
                 mock_config_dir.return_value = str(config_dir)
@@ -650,8 +650,8 @@ class TestConfigManagerIntegration:
             data_dir = Path(temp_dir) / "data"
 
             with (
-                patch("trackit.utils.config.user_config_dir") as mock_config_dir,
-                patch("trackit.utils.config.user_data_dir") as mock_data_dir,
+                patch("clockman.utils.config.user_config_dir") as mock_config_dir,
+                patch("clockman.utils.config.user_data_dir") as mock_data_dir,
             ):
 
                 mock_config_dir.return_value = str(config_dir)

@@ -1,5 +1,5 @@
 """
-Database models for TrackIt.
+Database models for Clockman.
 
 This module defines the Pydantic models for time tracking sessions and related data.
 """

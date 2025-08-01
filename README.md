@@ -1,4 +1,4 @@
-# TrackIt
+# Clockman
 
 > Terminal-based time tracking for developers who value privacy and simplicity
 
@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-TrackIt is a privacy-focused, offline-first time tracking CLI designed for developers who want to track their work without sacrificing performance or privacy.
+Clockman is a privacy-focused, offline-first time tracking CLI designed for developers who want to track their work without sacrificing performance or privacy.
 
 ## Features
 
@@ -23,7 +23,7 @@ TrackIt is a privacy-focused, offline-first time tracking CLI designed for devel
 ### Installation
 
 ```bash
-pip install trackit
+pip install clockman
 ```
 
 ### Basic Usage
@@ -132,20 +132,20 @@ tracker start "Unit test coverage" --tag testing --tag quality
 
 ## Configuration
 
-TrackIt stores all data locally in your system's application data directory:
+Clockman stores all data locally in your system's application data directory:
 
-- **Linux**: `~/.local/share/trackit/`
-- **macOS**: `~/Library/Application Support/trackit/`
-- **Windows**: `%APPDATA%\trackit\`
+- **Linux**: `~/.local/share/clockman/`
+- **macOS**: `~/Library/Application Support/clockman/`
+- **Windows**: `%APPDATA%\clockman\`
 
 The SQLite database (`tracking.db`) contains all your time tracking data.
 
 ## Architecture
 
-TrackIt is built with a clean, modular architecture:
+Clockman is built with a clean, modular architecture:
 
 ```bash
-trackit/
+clockman/
     cli/           # Command-line interface
     core/          # Core business logic
     db/            # Database operations
@@ -180,4 +180,4 @@ Built with ❤️ by the Theany Team for developers who value privacy and produc
 
 ---
 
-**Questions or issues?** [Open an issue](https://github.com/theany-org/trackit/issues) on GitHub.
+**Questions or issues?** [Open an issue](https://github.com/theany-org/clockman/issues) on GitHub.

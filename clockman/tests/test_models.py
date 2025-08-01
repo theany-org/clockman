@@ -1,5 +1,5 @@
 """
-Tests for database models (trackit.db.models).
+Tests for database models (clockman.db.models).
 
 This module tests the Pydantic models including validation, serialization,
 and business logic methods.
@@ -11,7 +11,7 @@ from uuid import UUID, uuid4
 import pytest
 from pydantic import ValidationError
 
-from trackit.db.models import DailyStats, ProjectStats, TimeSession
+from clockman.db.models import DailyStats, ProjectStats, TimeSession
 
 
 class TestTimeSession:

@@ -1,5 +1,5 @@
 """
-Tests for formatting utilities (trackit.utils.formatting).
+Tests for formatting utilities (clockman.utils.formatting).
 
 This module tests time formatting, display utilities, and other formatting functions.
 """
@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
-from trackit.utils.formatting import (
+from clockman.utils.formatting import (
     format_bytes,
     format_date,
     format_datetime,
@@ -136,7 +136,7 @@ class TestFormatDuration:
         # Assert
         assert result == "1h 0m 30s"  # Should include minutes for clarity
 
-    @patch("trackit.utils.formatting.get_config_manager")
+    @patch("clockman.utils.formatting.get_config_manager")
     def test_format_duration_uses_config_default(self, mock_get_config: Mock) -> None:
         """Test that format_duration uses config default for show_seconds."""
         # Arrange
@@ -173,7 +173,7 @@ class TestFormatDatetime:
         # Arrange
         dt = datetime(2024, 1, 15, 14, 30, 45, tzinfo=timezone.utc)
 
-        with patch("trackit.utils.formatting.get_config_manager") as mock_get_config:
+        with patch("clockman.utils.formatting.get_config_manager") as mock_get_config:
             mock_config = Mock()
             mock_config.get_date_format.return_value = "%Y-%m-%d"
             mock_config.get_time_format.return_value = "%H:%M:%S"
@@ -195,7 +195,7 @@ class TestFormatDatetime:
         # Arrange
         dt = datetime(2024, 1, 15, 14, 30, 45, tzinfo=timezone.utc)
 
-        with patch("trackit.utils.formatting.get_config_manager") as mock_get_config:
+        with patch("clockman.utils.formatting.get_config_manager") as mock_get_config:
             mock_config = Mock()
             mock_config.get_date_format.return_value = "%Y-%m-%d"
             mock_get_config.return_value = mock_config
@@ -214,7 +214,7 @@ class TestFormatDatetime:
         # Arrange
         dt = datetime(2024, 1, 15, 14, 30, 45, tzinfo=timezone.utc)
 
-        with patch("trackit.utils.formatting.get_config_manager") as mock_get_config:
+        with patch("clockman.utils.formatting.get_config_manager") as mock_get_config:
             mock_config = Mock()
             mock_config.get_time_format.return_value = "%H:%M:%S"
             mock_config.show_seconds.return_value = True
@@ -232,7 +232,7 @@ class TestFormatDatetime:
         # Arrange
         dt = datetime(2024, 1, 15, 14, 30, 45, tzinfo=timezone.utc)
 
-        with patch("trackit.utils.formatting.get_config_manager") as mock_get_config:
+        with patch("clockman.utils.formatting.get_config_manager") as mock_get_config:
             mock_config = Mock()
             mock_config.get_time_format.return_value = "%H:%M:%S"
             mock_config.show_seconds.return_value = False
@@ -250,7 +250,7 @@ class TestFormatDatetime:
         # Arrange
         dt = datetime(2024, 1, 15, 14, 30, 45)  # No timezone
 
-        with patch("trackit.utils.formatting.get_config_manager") as mock_get_config:
+        with patch("clockman.utils.formatting.get_config_manager") as mock_get_config:
             mock_config = Mock()
             mock_config.get_date_format.return_value = "%Y-%m-%d"
             mock_config.get_time_format.return_value = "%H:%M:%S"
@@ -269,7 +269,7 @@ class TestFormatDatetime:
         # Arrange
         dt = datetime(2024, 1, 15, 14, 30, 45, tzinfo=timezone.utc)
 
-        with patch("trackit.utils.formatting.get_config_manager") as mock_get_config:
+        with patch("clockman.utils.formatting.get_config_manager") as mock_get_config:
             mock_config = Mock()
             mock_config.get_date_format.return_value = "%d/%m/%Y"
             mock_config.get_time_format.return_value = "%I:%M %p"
@@ -293,7 +293,7 @@ class TestFormatDateAndTime:
         # Arrange
         dt = datetime(2024, 1, 15, 14, 30, 45, tzinfo=timezone.utc)
 
-        with patch("trackit.utils.formatting.get_config_manager") as mock_config:
+        with patch("clockman.utils.formatting.get_config_manager") as mock_config:
             mock_config_instance = MagicMock()
             mock_config_instance.get_date_format.return_value = "%Y-%m-%d"
             mock_config_instance.get_time_format.return_value = "%H:%M:%S"
@@ -311,7 +311,7 @@ class TestFormatDateAndTime:
         # Arrange
         dt = datetime(2024, 1, 15, 14, 30, 45, tzinfo=timezone.utc)
 
-        with patch("trackit.utils.formatting.get_config_manager") as mock_config:
+        with patch("clockman.utils.formatting.get_config_manager") as mock_config:
             mock_config_instance = MagicMock()
             mock_config_instance.get_date_format.return_value = "%Y-%m-%d"
             mock_config_instance.get_time_format.return_value = "%H:%M:%S"
@@ -387,7 +387,7 @@ class TestTruncateText:
         assert len(result) == 2
         assert result == "..."[:2]
 
-    @patch("trackit.utils.formatting.get_config_manager")
+    @patch("clockman.utils.formatting.get_config_manager")
     def test_truncate_text_uses_config_default(self, mock_get_config: Mock) -> None:
         """Test that truncate_text uses config default for max_length."""
         # Arrange
@@ -622,7 +622,7 @@ class TestFormatRelativeTime:
         # Assert
         assert result == "1 day ago"
 
-    @patch("trackit.utils.formatting.datetime")
+    @patch("clockman.utils.formatting.datetime")
     def test_format_relative_time_future_minutes(self, mock_datetime: Mock) -> None:
         """Test formatting future time in minutes."""
         # Arrange
@@ -636,7 +636,7 @@ class TestFormatRelativeTime:
         # Assert
         assert result == "in 10 minutes"
 
-    @patch("trackit.utils.formatting.datetime")
+    @patch("clockman.utils.formatting.datetime")
     def test_format_relative_time_future_hours(self, mock_datetime: Mock) -> None:
         """Test formatting future time in hours."""
         # Arrange
@@ -650,7 +650,7 @@ class TestFormatRelativeTime:
         # Assert
         assert result == "in 2 hours"
 
-    @patch("trackit.utils.formatting.datetime")
+    @patch("clockman.utils.formatting.datetime")
     def test_format_relative_time_future_days(self, mock_datetime: Mock) -> None:
         """Test formatting future time in days."""
         # Arrange
@@ -698,7 +698,7 @@ class TestFormattingEdgeCases:
         # Arrange
         dt = datetime(2024, 1, 15, 14, 30, 45, tzinfo=timezone.utc)
 
-        with patch("trackit.utils.formatting.get_config_manager") as mock_get_config:
+        with patch("clockman.utils.formatting.get_config_manager") as mock_get_config:
             mock_config = Mock()
             mock_config.get_date_format.return_value = ""
             mock_config.get_time_format.return_value = ""
@@ -766,7 +766,7 @@ class TestFormattingIntegration:
         dt = datetime(2024, 6, 15, 14, 30, 45, tzinfo=timezone.utc)
 
         # Test with different config settings
-        with patch("trackit.utils.formatting.get_config_manager") as mock_get_config:
+        with patch("clockman.utils.formatting.get_config_manager") as mock_get_config:
             mock_config = Mock()
             mock_config.get_date_format.return_value = "%d/%m/%Y"
             mock_config.get_time_format.return_value = "%I:%M %p"
@@ -789,7 +789,7 @@ class TestFormattingIntegration:
         # Arrange
         long_text = "This is a very long task name that exceeds normal limits"
 
-        with patch("trackit.utils.formatting.get_config_manager") as mock_get_config:
+        with patch("clockman.utils.formatting.get_config_manager") as mock_get_config:
             mock_config = Mock()
             mock_config.get_max_task_name_length.return_value = 25
             mock_get_config.return_value = mock_config
@@ -811,13 +811,13 @@ class TestFormattingIntegration:
         task_name = "Very Long Task Name That Should Be Truncated For Display"
         file_size = 1024 * 1024 * 2.0  # 2.0 MB
 
-        with patch("trackit.utils.formatting.get_config_manager") as mock_config:
+        with patch("clockman.utils.formatting.get_config_manager") as mock_config:
             mock_config_instance = MagicMock()
             mock_config_instance.get_date_format.return_value = "%Y-%m-%d"
             mock_config_instance.get_time_format.return_value = "%H:%M:%S"
             mock_config.return_value = mock_config_instance
 
-            with patch("trackit.utils.formatting.datetime") as mock_datetime:
+            with patch("clockman.utils.formatting.datetime") as mock_datetime:
                 mock_datetime.now.return_value = datetime(
                     2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc
                 )

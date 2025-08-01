@@ -1,11 +1,11 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security Vulnerability
-    url: https://github.com/theany-org/trackit/security/advisories/new
+    url: https://github.com/theany-org/clockman/security/advisories/new
     about: Report a security vulnerability privately
   - name: Discussion
-    url: https://github.com/theany-org/trackit/discussions
+    url: https://github.com/theany-org/clockman/discussions
     about: Ask questions or discuss ideas with the community
   - name: Documentation
-    url: https://github.com/theany-org/trackit/blob/master/README.md
+    url: https://github.com/theany-org/clockman/blob/master/README.md
     about: View the project documentation
