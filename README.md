@@ -23,7 +23,7 @@ TrackIt is a privacy-focused, offline-first time tracking CLI designed for devel
 ### Installation
 
 ```bash
-pip install trackit
+pip install clockman
 ```
 
 ### Basic Usage
