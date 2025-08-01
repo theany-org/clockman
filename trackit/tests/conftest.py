@@ -7,7 +7,7 @@ This module provides shared fixtures and configuration for all test modules.
 import tempfile
 from datetime import date, datetime, timezone
 from pathlib import Path
-from typing import Generator
+from typing import Any, Generator, Optional
 from unittest.mock import Mock
 from uuid import uuid4
 
@@ -131,13 +131,13 @@ def today() -> date:
 
 
 @pytest.fixture
-def mock_datetime():
+def mock_datetime() -> type:
     """Mock datetime.now to return a fixed datetime."""
     fixed_datetime = datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
 
     class MockDateTime:
         @classmethod
-        def now(cls, tz=None):
+        def now(cls, tz: Optional[Any] = None) -> datetime:
             if tz:
                 return fixed_datetime.astimezone(tz)
             return fixed_datetime.replace(tzinfo=None)

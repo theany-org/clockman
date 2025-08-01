@@ -6,6 +6,8 @@ error handling, and business logic.
 """
 
 from datetime import date, datetime, timezone
+from pathlib import Path
+from typing import Any
 from unittest.mock import patch
 from uuid import UUID, uuid4
 
@@ -25,7 +27,7 @@ from trackit.db.schema import DatabaseManager
 class TestTimeTracker:
     """Test cases for TimeTracker class."""
 
-    def test_init_creates_data_directory(self, temp_dir) -> None:
+    def test_init_creates_data_directory(self, temp_dir: Path) -> None:
         """Test that TimeTracker creates data directory on initialization."""
         # Arrange
         data_dir = temp_dir / "test_data"
@@ -40,7 +42,7 @@ class TestTimeTracker:
         assert isinstance(tracker.db_manager, DatabaseManager)
         assert isinstance(tracker.session_repo, SessionRepository)
 
-    def test_init_with_existing_directory(self, temp_dir) -> None:
+    def test_init_with_existing_directory(self, temp_dir: Path) -> None:
         """Test TimeTracker initialization with existing directory."""
         # Arrange
         data_dir = temp_dir / "existing"
@@ -52,7 +54,7 @@ class TestTimeTracker:
         # Assert
         assert tracker.data_dir == data_dir
 
-    def test_start_session_success(self, time_tracker) -> None:
+    def test_start_session_success(self, time_tracker: TimeTracker) -> None:
         """Test successful session start."""
         # Act
         session_id = time_tracker.start_session(
@@ -73,7 +75,7 @@ class TestTimeTracker:
         assert session.is_active is True
         assert session.end_time is None
 
-    def test_start_session_with_minimal_params(self, time_tracker) -> None:
+    def test_start_session_with_minimal_params(self, time_tracker: TimeTracker) -> None:
         """Test starting session with minimal parameters."""
         # Act
         session_id = time_tracker.start_session("Simple Task")
@@ -85,7 +87,7 @@ class TestTimeTracker:
         assert session.description is None
         assert session.tags == []
 
-    def test_start_session_trims_whitespace(self, time_tracker) -> None:
+    def test_start_session_trims_whitespace(self, time_tracker: TimeTracker) -> None:
         """Test that task name and description are trimmed."""
         # Act
         session_id = time_tracker.start_session(
@@ -95,10 +97,11 @@ class TestTimeTracker:
 
         # Assert
         session = time_tracker.get_session_by_id(session_id)
+        assert session is not None
         assert session.task_name == "Test Task"
         assert session.description == "Test description"
 
-    def test_start_session_with_active_session_raises_error(self, time_tracker) -> None:
+    def test_start_session_with_active_session_raises_error(self, time_tracker: TimeTracker) -> None:
         """Test that starting session with active session raises error."""
         # Arrange
         time_tracker.start_session("First Task")
@@ -110,11 +113,12 @@ class TestTimeTracker:
         assert "already active" in str(exc_info.value)
         assert "First Task" in str(exc_info.value)
 
-    def test_stop_session_success(self, time_tracker) -> None:
+    def test_stop_session_success(self, time_tracker: TimeTracker) -> None:
         """Test successful session stop."""
         # Arrange
         session_id = time_tracker.start_session("Test Task")
         original_session = time_tracker.get_session_by_id(session_id)
+        assert original_session is not None
         assert original_session.is_active
 
         # Act
@@ -127,7 +131,7 @@ class TestTimeTracker:
         assert stopped_session.end_time is not None
         assert stopped_session.end_time > stopped_session.start_time
 
-    def test_stop_session_by_id(self, time_tracker) -> None:
+    def test_stop_session_by_id(self, time_tracker: TimeTracker) -> None:
         """Test stopping session by specific ID."""
         # Arrange
         session_id = time_tracker.start_session("Test Task")
@@ -141,7 +145,7 @@ class TestTimeTracker:
         assert stopped_session.is_active is False
 
     def test_stop_session_with_no_active_session_raises_error(
-        self, time_tracker
+        self, time_tracker: TimeTracker
     ) -> None:
         """Test stopping session when none is active raises error."""
         # Act & Assert
@@ -150,7 +154,7 @@ class TestTimeTracker:
 
         assert "No active session to stop" in str(exc_info.value)
 
-    def test_stop_session_with_invalid_id_raises_error(self, time_tracker) -> None:
+    def test_stop_session_with_invalid_id_raises_error(self, time_tracker: TimeTracker) -> None:
         """Test stopping session with invalid ID raises error."""
         # Arrange
         invalid_id = uuid4()
@@ -161,7 +165,7 @@ class TestTimeTracker:
 
         assert str(invalid_id) in str(exc_info.value)
 
-    def test_get_active_session_with_active(self, time_tracker) -> None:
+    def test_get_active_session_with_active(self, time_tracker: TimeTracker) -> None:
         """Test getting active session when one exists."""
         # Arrange
         session_id = time_tracker.start_session("Active Task")
@@ -174,7 +178,7 @@ class TestTimeTracker:
         assert active_session.id == session_id
         assert active_session.is_active
 
-    def test_get_active_session_with_none_active(self, time_tracker) -> None:
+    def test_get_active_session_with_none_active(self, time_tracker: TimeTracker) -> None:
         """Test getting active session when none exists."""
         # Act
         active_session = time_tracker.get_active_session()
@@ -182,7 +186,7 @@ class TestTimeTracker:
         # Assert
         assert active_session is None
 
-    def test_get_session_by_id_exists(self, time_tracker) -> None:
+    def test_get_session_by_id_exists(self, time_tracker: TimeTracker) -> None:
         """Test getting session by ID when it exists."""
         # Arrange
         session_id = time_tracker.start_session("Test Task")
@@ -194,7 +198,7 @@ class TestTimeTracker:
         assert session is not None
         assert session.id == session_id
 
-    def test_get_session_by_id_not_exists(self, time_tracker) -> None:
+    def test_get_session_by_id_not_exists(self, time_tracker: TimeTracker) -> None:
         """Test getting session by ID when it doesn't exist."""
         # Arrange
         invalid_id = uuid4()
@@ -205,7 +209,7 @@ class TestTimeTracker:
         # Assert
         assert session is None
 
-    def test_get_entries_for_date(self, time_tracker) -> None:
+    def test_get_entries_for_date(self, time_tracker: TimeTracker) -> None:
         """Test getting entries for a specific date."""
         # Arrange
         target_date = date(2024, 1, 1)
@@ -237,7 +241,7 @@ class TestTimeTracker:
         assert "Task 1" in task_names
         assert "Task 2" in task_names
 
-    def test_get_entries_in_range(self, time_tracker) -> None:
+    def test_get_entries_in_range(self, time_tracker: TimeTracker) -> None:
         """Test getting entries within a date range."""
         # Arrange
         start_date = date(2024, 1, 1)
@@ -279,7 +283,7 @@ class TestTimeTracker:
         assert "Task 2" in task_names
         assert "Task 3" not in task_names
 
-    def test_get_recent_entries(self, time_tracker) -> None:
+    def test_get_recent_entries(self, time_tracker: TimeTracker) -> None:
         """Test getting recent entries with limit."""
         # Arrange
         # Create multiple sessions
@@ -299,7 +303,7 @@ class TestTimeTracker:
         assert entries[1].task_name == "Task 4"
         assert entries[2].task_name == "Task 3"
 
-    def test_get_entries_by_task(self, time_tracker) -> None:
+    def test_get_entries_by_task(self, time_tracker: TimeTracker) -> None:
         """Test getting entries by task name."""
         # Arrange
         session_id1 = time_tracker.start_session("Task A")
@@ -318,7 +322,7 @@ class TestTimeTracker:
         assert len(entries) == 2
         assert all(entry.task_name == "Task A" for entry in entries)
 
-    def test_get_entries_by_tag(self, time_tracker) -> None:
+    def test_get_entries_by_tag(self, time_tracker: TimeTracker) -> None:
         """Test getting entries by tag."""
         # Arrange
         session_id1 = time_tracker.start_session(
@@ -341,7 +345,7 @@ class TestTimeTracker:
         assert len(entries) == 2
         assert all("development" in entry.tags for entry in entries)
 
-    def test_get_daily_stats(self, time_tracker) -> None:
+    def test_get_daily_stats(self, time_tracker: TimeTracker) -> None:
         """Test getting daily statistics."""
         # Arrange
         target_date = date(2024, 1, 1)
@@ -374,7 +378,7 @@ class TestTimeTracker:
         assert stats.unique_tasks == 2
         assert stats.total_duration > 0
 
-    def test_get_project_stats(self, time_tracker) -> None:
+    def test_get_project_stats(self, time_tracker: TimeTracker) -> None:
         """Test getting project statistics."""
         # Arrange
         task_name = "Project Alpha"
@@ -397,7 +401,7 @@ class TestTimeTracker:
         assert stats.average_session > 0
         assert set(stats.tags) == {"backend", "frontend"}
 
-    def test_delete_session(self, time_tracker) -> None:
+    def test_delete_session(self, time_tracker: TimeTracker) -> None:
         """Test deleting a session."""
         # Arrange
         session_id = time_tracker.start_session("Test Task")
@@ -413,7 +417,7 @@ class TestTimeTracker:
         assert result is True
         assert time_tracker.get_session_by_id(session_id) is None
 
-    def test_delete_nonexistent_session(self, time_tracker) -> None:
+    def test_delete_nonexistent_session(self, time_tracker: TimeTracker) -> None:
         """Test deleting a non-existent session."""
         # Arrange
         invalid_id = uuid4()
@@ -424,7 +428,7 @@ class TestTimeTracker:
         # Assert
         assert result is False
 
-    def test_update_session_success(self, time_tracker) -> None:
+    def test_update_session_success(self, time_tracker: TimeTracker) -> None:
         """Test successful session update."""
         # Arrange
         session_id = time_tracker.start_session("Original Task", description="Original")
@@ -444,7 +448,7 @@ class TestTimeTracker:
         assert updated_session.description == "Updated description"
         assert set(updated_session.tags) == {"updated", "test"}
 
-    def test_update_session_partial(self, time_tracker) -> None:
+    def test_update_session_partial(self, time_tracker: TimeTracker) -> None:
         """Test partial session update."""
         # Arrange
         session_id = time_tracker.start_session(
@@ -456,11 +460,12 @@ class TestTimeTracker:
         updated_session = time_tracker.update_session(session_id, task_name="New Task")
 
         # Assert
+        assert updated_session is not None
         assert updated_session.task_name == "New Task"
         assert updated_session.description == "Description"  # Unchanged
         assert updated_session.tags == ["tag1"]  # Unchanged
 
-    def test_update_session_trims_whitespace(self, time_tracker) -> None:
+    def test_update_session_trims_whitespace(self, time_tracker: TimeTracker) -> None:
         """Test that update trims whitespace."""
         # Arrange
         session_id = time_tracker.start_session("Task")
@@ -474,10 +479,11 @@ class TestTimeTracker:
         )
 
         # Assert
+        assert updated_session is not None
         assert updated_session.task_name == "Updated Task"
         assert updated_session.description == "Updated description"
 
-    def test_update_session_clear_description(self, time_tracker) -> None:
+    def test_update_session_clear_description(self, time_tracker: TimeTracker) -> None:
         """Test clearing description with empty string."""
         # Arrange
         session_id = time_tracker.start_session("Task", description="Original")
@@ -487,9 +493,10 @@ class TestTimeTracker:
         updated_session = time_tracker.update_session(session_id, description="")
 
         # Assert
+        assert updated_session is not None
         assert updated_session.description is None
 
-    def test_update_session_nonexistent_raises_error(self, time_tracker) -> None:
+    def test_update_session_nonexistent_raises_error(self, time_tracker: TimeTracker) -> None:
         """Test updating non-existent session raises error."""
         # Arrange
         invalid_id = uuid4()
@@ -500,7 +507,7 @@ class TestTimeTracker:
 
         assert str(invalid_id) in str(exc_info.value)
 
-    def test_get_database_stats(self, time_tracker) -> None:
+    def test_get_database_stats(self, time_tracker: TimeTracker) -> None:
         """Test getting database statistics."""
         # Arrange
         session_id = time_tracker.start_session("Test Task")
@@ -547,7 +554,7 @@ class TestTimeTrackingExceptions:
 class TestTimeTrackerIntegration:
     """Integration tests for TimeTracker with real database."""
 
-    def test_complete_workflow(self, time_tracker) -> None:
+    def test_complete_workflow(self, time_tracker: TimeTracker) -> None:
         """Test complete time tracking workflow."""
         # Start session
         session_id = time_tracker.start_session(
@@ -578,6 +585,7 @@ class TestTimeTrackerIntegration:
         updated = time_tracker.update_session(
             session_id, task_name="Updated Integration Test"
         )
+        assert updated is not None
         assert updated.task_name == "Updated Integration Test"
 
         # Get stats
@@ -590,7 +598,7 @@ class TestTimeTrackerIntegration:
         assert deleted is True
         assert time_tracker.get_session_by_id(session_id) is None
 
-    def test_multiple_sessions_same_task(self, time_tracker) -> None:
+    def test_multiple_sessions_same_task(self, time_tracker: TimeTracker) -> None:
         """Test multiple sessions for the same task."""
         # Create multiple sessions for same task
         task_name = "Recurring Task"

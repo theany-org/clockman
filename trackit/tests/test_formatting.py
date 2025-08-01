@@ -5,6 +5,7 @@ This module tests time formatting, display utilities, and other formatting funct
 """
 
 from datetime import datetime, timedelta, timezone
+from typing import Any
 from unittest.mock import MagicMock, Mock, patch
 
 import pytest
@@ -136,7 +137,7 @@ class TestFormatDuration:
         assert result == "1h 0m 30s"  # Should include minutes for clarity
 
     @patch("trackit.utils.formatting.get_config_manager")
-    def test_format_duration_uses_config_default(self, mock_get_config) -> None:
+    def test_format_duration_uses_config_default(self, mock_get_config: Mock) -> None:
         """Test that format_duration uses config default for show_seconds."""
         # Arrange
         mock_config = Mock()
@@ -387,7 +388,7 @@ class TestTruncateText:
         assert result == "..."[:2]
 
     @patch("trackit.utils.formatting.get_config_manager")
-    def test_truncate_text_uses_config_default(self, mock_get_config) -> None:
+    def test_truncate_text_uses_config_default(self, mock_get_config: Mock) -> None:
         """Test that truncate_text uses config default for max_length."""
         # Arrange
         mock_config = Mock()
@@ -622,7 +623,7 @@ class TestFormatRelativeTime:
         assert result == "1 day ago"
 
     @patch("trackit.utils.formatting.datetime")
-    def test_format_relative_time_future_minutes(self, mock_datetime) -> None:
+    def test_format_relative_time_future_minutes(self, mock_datetime: Mock) -> None:
         """Test formatting future time in minutes."""
         # Arrange
         fixed_now = datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
@@ -636,7 +637,7 @@ class TestFormatRelativeTime:
         assert result == "in 10 minutes"
 
     @patch("trackit.utils.formatting.datetime")
-    def test_format_relative_time_future_hours(self, mock_datetime) -> None:
+    def test_format_relative_time_future_hours(self, mock_datetime: Mock) -> None:
         """Test formatting future time in hours."""
         # Arrange
         fixed_now = datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
@@ -650,7 +651,7 @@ class TestFormatRelativeTime:
         assert result == "in 2 hours"
 
     @patch("trackit.utils.formatting.datetime")
-    def test_format_relative_time_future_days(self, mock_datetime) -> None:
+    def test_format_relative_time_future_days(self, mock_datetime: Mock) -> None:
         """Test formatting future time in days."""
         # Arrange
         fixed_now = datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)

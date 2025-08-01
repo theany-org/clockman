@@ -6,6 +6,7 @@ error handling, and output formatting.
 """
 
 from datetime import datetime, timedelta, timezone
+from typing import Any
 from unittest import result
 from unittest.mock import Mock, patch
 from uuid import uuid4
@@ -28,7 +29,7 @@ class TestCLIMain:
         self.runner = CliRunner()
 
     @patch("trackit.cli.main.get_tracker")
-    def test_start_command_success(self, mock_get_tracker) -> None:
+    def test_start_command_success(self, mock_get_tracker: Mock) -> None:
         """Test successful start command."""
         # Arrange
         mock_tracker = Mock()
@@ -47,7 +48,7 @@ class TestCLIMain:
         )
 
     @patch("trackit.cli.main.get_tracker")
-    def test_start_command_with_tags_and_description(self, mock_get_tracker) -> None:
+    def test_start_command_with_tags_and_description(self, mock_get_tracker: Mock) -> None:
         """Test start command with tags and description."""
         # Arrange
         mock_tracker = Mock()
@@ -80,7 +81,7 @@ class TestCLIMain:
         )
 
     @patch("trackit.cli.main.get_tracker")
-    def test_start_command_stops_active_session(self, mock_get_tracker) -> None:
+    def test_start_command_stops_active_session(self, mock_get_tracker: Mock) -> None:
         """Test start command stops existing active session."""
         # Arrange
         mock_tracker = Mock()
@@ -106,7 +107,7 @@ class TestCLIMain:
         mock_tracker.start_session.assert_called_once()
 
     @patch("trackit.cli.main.get_tracker")
-    def test_start_command_error_handling(self, mock_get_tracker) -> None:
+    def test_start_command_error_handling(self, mock_get_tracker: Mock) -> None:
         """Test start command error handling."""
         # Arrange
         mock_tracker = Mock()
@@ -121,7 +122,7 @@ class TestCLIMain:
         assert "Error starting task: Database error" in result.stdout
 
     @patch("trackit.cli.main.get_tracker")
-    def test_stop_command_success(self, mock_get_tracker) -> None:
+    def test_stop_command_success(self, mock_get_tracker: Mock) -> None:
         """Test successful stop command."""
         # Arrange
         mock_tracker = Mock()
@@ -146,7 +147,7 @@ class TestCLIMain:
         mock_tracker.stop_session.assert_called_once()
 
     @patch("trackit.cli.main.get_tracker")
-    def test_stop_command_no_active_session(self, mock_get_tracker) -> None:
+    def test_stop_command_no_active_session(self, mock_get_tracker: Mock) -> None:
         """Test stop command with no active session."""
         # Arrange
         mock_tracker = Mock()
@@ -162,7 +163,7 @@ class TestCLIMain:
         mock_tracker.stop_session.assert_not_called()
 
     @patch("trackit.cli.main.get_tracker")
-    def test_stop_command_error_handling(self, mock_get_tracker) -> None:
+    def test_stop_command_error_handling(self, mock_get_tracker: Mock) -> None:
         """Test stop command error handling."""
         # Arrange
         mock_tracker = Mock()
@@ -177,7 +178,7 @@ class TestCLIMain:
         assert "Error stopping session: Database error" in result.stdout
 
     @patch("trackit.cli.main.get_tracker")
-    def test_status_command_with_active_session(self, mock_get_tracker) -> None:
+    def test_status_command_with_active_session(self, mock_get_tracker: Mock) -> None:
         """Test status command with active session."""
         # Arrange
         mock_tracker = Mock()
@@ -203,7 +204,7 @@ class TestCLIMain:
         assert any(tag_set in result.stdout for tag_set in ["tag1, tag2", "tag2, tag1"])
 
     @patch("trackit.cli.main.get_tracker")
-    def test_status_command_no_active_session(self, mock_get_tracker) -> None:
+    def test_status_command_no_active_session(self, mock_get_tracker: Mock) -> None:
         """Test status command with no active session."""
         # Arrange
         mock_tracker = Mock()
@@ -218,7 +219,7 @@ class TestCLIMain:
         assert "No active session" in result.stdout
 
     @patch("trackit.cli.main.get_tracker")
-    def test_status_command_error_handling(self, mock_get_tracker) -> None:
+    def test_status_command_error_handling(self, mock_get_tracker: Mock) -> None:
         """Test status command error handling."""
         # Arrange
         mock_tracker = Mock()
@@ -234,7 +235,7 @@ class TestCLIMain:
 
     @patch("trackit.cli.main.get_tracker")
     @patch("datetime.date")
-    def test_log_command_today_with_entries(self, mock_date, mock_get_tracker) -> None:
+    def test_log_command_today_with_entries(self, mock_date: Mock, mock_get_tracker: Mock) -> None:
         """Test log command showing today's entries."""
         # Arrange
         mock_date.today.return_value = datetime(2024, 1, 1).date()
@@ -276,7 +277,7 @@ class TestCLIMain:
         assert "Total:" in result.stdout
 
     @patch("trackit.cli.main.get_tracker")
-    def test_log_command_recent_entries(self, mock_get_tracker) -> None:
+    def test_log_command_recent_entries(self, mock_get_tracker: Mock) -> None:
         """Test log command showing recent entries."""
         # Arrange
         mock_tracker = Mock()
@@ -304,7 +305,7 @@ class TestCLIMain:
         assert "Recent Task" in result.stdout
 
     @patch("trackit.cli.main.get_tracker")
-    def test_log_command_no_entries(self, mock_get_tracker) -> None:
+    def test_log_command_no_entries(self, mock_get_tracker: Mock) -> None:
         """Test log command with no entries."""
         # Arrange
         mock_tracker = Mock()
@@ -319,7 +320,7 @@ class TestCLIMain:
         assert "No entries found" in result.stdout
 
     @patch("trackit.cli.main.get_tracker")
-    def test_log_command_error_handling(self, mock_get_tracker) -> None:
+    def test_log_command_error_handling(self, mock_get_tracker: Mock) -> None:
         """Test log command error handling."""
         # Arrange
         mock_tracker = Mock()
@@ -353,7 +354,7 @@ class TestCLIMain:
         assert "TrackIt version" in result.stdout
 
     @patch("trackit.cli.main.get_config_manager")
-    def test_get_tracker_initialization(self, mock_get_config_manager) -> None:
+    def test_get_tracker_initialization(self, mock_get_config_manager: Mock) -> None:
         """Test tracker initialization."""
         # Arrange
         mock_config = Mock()
@@ -369,7 +370,7 @@ class TestCLIMain:
         mock_get_config_manager.assert_called_once()
 
     @patch("trackit.cli.main.get_config_manager")
-    def test_get_tracker_singleton(self, mock_get_config_manager) -> None:
+    def test_get_tracker_singleton(self, mock_get_config_manager: Mock) -> None:
         """Test that get_tracker returns the same instance."""
         # Arrange
         mock_config = Mock()
@@ -482,7 +483,7 @@ class TestCLICommandValidation:
         assert "Missing argument" in result.output or "Usage:" in result.output
 
     @patch("trackit.cli.main.get_tracker")
-    def test_start_command_empty_task_name_handled(self, mock_get_tracker) -> None:
+    def test_start_command_empty_task_name_handled(self, mock_get_tracker: Mock) -> None:
         """Test that empty task name is handled gracefully."""
         # Arrange
         mock_tracker = Mock()

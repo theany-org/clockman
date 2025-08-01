@@ -17,7 +17,7 @@ from trackit.db.models import DailyStats, ProjectStats, TimeSession
 class TestTimeSession:
     """Test cases for TimeSession model."""
 
-    def test_time_session_creation_with_defaults(self):
+    def test_time_session_creation_with_defaults(self) -> None:
         """Test creating TimeSession with minimal required fields."""
         # Act
         session = TimeSession(
@@ -271,7 +271,7 @@ class TestTimeSession:
 class TestDailyStats:
     """Test cases for DailyStats model."""
 
-    def test_daily_stats_creation_with_defaults(self):
+    def test_daily_stats_creation_with_defaults(self) -> None:
         """Test creating DailyStats with minimal fields."""
         stats = DailyStats(
             date="2024-01-01",

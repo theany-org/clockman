@@ -206,7 +206,7 @@ class TestConfigManager:
         assert config_manager.get("new_section.new_key") == "new_value"
 
     @patch("trackit.utils.config.ConfigManager._save_config")
-    def test_set_saves_config(self, mock_save) -> None:
+    def test_set_saves_config(self, mock_save: Mock) -> None:
         """Test that set method saves configuration."""
         config_manager = ConfigManager()
 
@@ -339,7 +339,7 @@ class TestConfigManager:
         config_manager.set("display.max_task_name_length", 100)
         assert config_manager.get_max_task_name_length() == 100
 
-    def test_get_default_tags(self):
+    def test_get_default_tags(self) -> None:
         """Test getting default tags."""
         config_manager = ConfigManager()
 
