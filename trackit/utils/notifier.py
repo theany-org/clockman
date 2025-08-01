@@ -52,11 +52,15 @@ async def notify(title: str, message: str) -> Optional[str]:
             logger.info(f"[NOTIFICATION] {title}: {message}")
         return None
 
-    # Check for headless environment
-    if not os.environ.get("DISPLAY") and not os.environ.get("WAYLAND_DISPLAY"):
+    # Check for headless environment or CI
+    is_headless = (
+        not os.environ.get("DISPLAY") and not os.environ.get("WAYLAND_DISPLAY")
+    ) or os.environ.get("CI") == "true" or os.environ.get("TRACKIT_HEADLESS") == "true"
+    
+    if is_headless:
         if config.should_fallback_to_log():
-            logger.info(f"[NOTIFICATION] {title}: {message} (no display available)")
-        return "No display available"
+            logger.info(f"[NOTIFICATION] {title}: {message} (headless/CI environment)")
+        return "Headless or CI environment"
 
     try:
         notifier = _get_notifier()

@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "trackit"
+name = "clockman"
 version = "0.1.0"
 description = "Terminal-based time tracking for developers"
 readme = "README.md"

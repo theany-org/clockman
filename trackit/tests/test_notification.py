@@ -12,7 +12,7 @@ async def test_notify_sends_notification() -> None:
     with (
         patch("trackit.utils.notifier._get_notifier") as mock_get_notifier,
         patch("trackit.utils.notifier.get_config_manager") as mock_config,
-        patch.dict(os.environ, {"DISPLAY": ":0"}),
+        patch.dict(os.environ, {"DISPLAY": ":0"}, clear=True),
     ):
         # Setup mocks
         mock_notifier_instance = MagicMock()
@@ -67,9 +67,9 @@ async def test_notify_headless_environment() -> None:
         with patch("trackit.utils.notifier.logger") as mock_logger:
             result = await notifier.notify("Test Title", "Test Message")
 
-            assert result == "No display available"
+            assert result == "Headless or CI environment"
             mock_logger.info.assert_called_once_with(
-                "[NOTIFICATION] Test Title: Test Message (no display available)"
+                "[NOTIFICATION] Test Title: Test Message (headless/CI environment)"
             )
 
 
@@ -79,7 +79,7 @@ async def test_notify_handles_exception() -> None:
     with (
         patch("trackit.utils.notifier._get_notifier") as mock_get_notifier,
         patch("trackit.utils.notifier.get_config_manager") as mock_config,
-        patch.dict(os.environ, {"DISPLAY": ":0"}),
+        patch.dict(os.environ, {"DISPLAY": ":0"}, clear=True),
     ):
         # Setup mocks
         mock_notifier_instance = MagicMock()
@@ -137,6 +137,7 @@ def test_notify_sync_in_async_context() -> None:
     with (
         patch("trackit.utils.notifier.asyncio.get_running_loop") as mock_get_loop,
         patch("concurrent.futures.ThreadPoolExecutor") as mock_executor,
+        patch("trackit.utils.notifier.notify") as mock_notify,
     ):
         # Mock running loop exists
         mock_get_loop.return_value = MagicMock()
@@ -147,6 +148,9 @@ def test_notify_sync_in_async_context() -> None:
         mock_future.result.return_value = None
         mock_executor_instance.submit.return_value = mock_future
         mock_executor.return_value.__enter__.return_value = mock_executor_instance
+
+        # Mock the async notify function to avoid coroutine warnings
+        mock_notify.return_value = None
 
         result = notifier.notify_sync("Async Context", "Message")
 
