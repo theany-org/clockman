@@ -155,5 +155,5 @@ jobs:
           CLOCKMAN_HEADLESS: "true"
           DISPLAY: ":99"
         run: |
-          tracker --help
-          tracker version
+          clockman --help
+          clockman version

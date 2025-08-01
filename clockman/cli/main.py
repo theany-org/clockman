@@ -25,17 +25,17 @@ app = typer.Typer(
 # Initialize console for rich output
 console = Console()
 
-# Global tracker instance
-tracker: Optional[TimeTracker] = None
+# Global clockman instance
+clockman: Optional[TimeTracker] = None
 
 
-def get_tracker() -> TimeTracker:
-    """Get or initialize the global time tracker instance."""
-    global tracker
-    if tracker is None:
+def get_clockman() -> TimeTracker:
+    """Get or initialize the global time clockman instance."""
+    global clockman
+    if clockman is None:
         config = get_config_manager()
-        tracker = TimeTracker(config.get_data_dir())
-    return tracker
+        clockman = TimeTracker(config.get_data_dir())
+    return clockman
 
 
 @app.command()
@@ -50,7 +50,7 @@ def start(
 ) -> None:
     """Start tracking time for a task."""
     try:
-        time_tracker = get_tracker()
+        time_tracker = get_clockman()
 
         # Stop any active session first
         active_session = time_tracker.get_active_session()
@@ -89,7 +89,7 @@ def start(
 def stop() -> None:
     """Stop the currently active time tracking session."""
     try:
-        time_tracker = get_tracker()
+        time_tracker = get_clockman()
         active_session = time_tracker.get_active_session()
 
         if not active_session:
@@ -121,7 +121,7 @@ def stop() -> None:
 def status() -> None:
     """Show the current active session status."""
     try:
-        time_tracker = get_tracker()
+        time_tracker = get_clockman()
         active_session = time_tracker.get_active_session()
 
         if not active_session:
@@ -164,7 +164,7 @@ def log(
 ) -> None:
     """Show recent time tracking entries."""
     try:
-        time_tracker = get_tracker()
+        time_tracker = get_clockman()
 
         if today:
             from datetime import date

@@ -34,13 +34,13 @@ class TestTimeTracker:
         assert not data_dir.exists()
 
         # Act
-        tracker = TimeTracker(data_dir)
+        clockman = TimeTracker(data_dir)
 
         # Assert
         assert data_dir.exists()
-        assert tracker.data_dir == data_dir
-        assert isinstance(tracker.db_manager, DatabaseManager)
-        assert isinstance(tracker.session_repo, SessionRepository)
+        assert clockman.data_dir == data_dir
+        assert isinstance(clockman.db_manager, DatabaseManager)
+        assert isinstance(clockman.session_repo, SessionRepository)
 
     def test_init_with_existing_directory(self, temp_dir: Path) -> None:
         """Test TimeTracker initialization with existing directory."""
@@ -49,10 +49,10 @@ class TestTimeTracker:
         data_dir.mkdir()
 
         # Act
-        tracker = TimeTracker(data_dir)
+        clockman = TimeTracker(data_dir)
 
         # Assert
-        assert tracker.data_dir == data_dir
+        assert clockman.data_dir == data_dir
 
     def test_start_session_success(self, time_tracker: TimeTracker) -> None:
         """Test successful session start."""

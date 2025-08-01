@@ -192,14 +192,14 @@ jobs:
             sleep 1
           fi
 
-          tracker --help
-          tracker version
+          clockman --help
+          clockman version
           # Test basic functionality
-          tracker start "Release test" --tag release
+          clockman start "Release test" --tag release
           sleep 1
-          tracker status
-          tracker stop
-          tracker log
+          clockman status
+          clockman stop
+          clockman log
 
   create-release:
     name: Create GitHub Release
@@ -234,7 +234,7 @@ jobs:
             git log --pretty=format:"- %s (%an)" $PREVIOUS_TAG..HEAD >> release_notes.md
           else
             echo "### Initial Release" >> release_notes.md
-            echo "- First release of Clockman CLI time tracker" >> release_notes.md
+            echo "- First release of Clockman CLI time clockman" >> release_notes.md
           fi
 
           echo "" >> release_notes.md

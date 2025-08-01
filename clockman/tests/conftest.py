@@ -50,7 +50,7 @@ def session_repository(db_manager: DatabaseManager) -> SessionRepository:
 
 @pytest.fixture
 def time_tracker(temp_dir: Path) -> TimeTracker:
-    """Provide a test time tracker instance."""
+    """Provide a test time clockman instance."""
     return TimeTracker(temp_dir)
 
 

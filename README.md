@@ -30,67 +30,67 @@ pip install clockman
 
 ```bash
 # Start tracking time
-tracker start "Fix authentication bug" --tag backend --tag bug
+clockman start "Fix authentication bug" --tag backend --tag bug
 
 # Check current status
-tracker status
+clockman status
 
 # Stop current session
-tracker stop
+clockman stop
 
 # View your work log
-tracker log
+clockman log
 ```
 
 ## Commands
 
-### `tracker start <description>`
+### `clockman start <description>`
 
 Start a new time tracking session.
 
 ```bash
 # Basic usage
-tracker start "Working on API endpoints"
+clockman start "Working on API endpoints"
 
 # With tags for better organization
-tracker start "Frontend refactoring" --tag frontend --tag refactor
+clockman start "Frontend refactoring" --tag frontend --tag refactor
 
 # Multiple tags
-tracker start "Database migration" --tag db --tag migration --tag urgent
+clockman start "Database migration" --tag db --tag migration --tag urgent
 ```
 
-### `tracker stop`
+### `clockman stop`
 
 Stop the current tracking session.
 
 ```bash
-tracker stop
+clockman stop
 ```
 
-### `tracker status`
+### `clockman status`
 
 Display current tracking status.
 
 ```bash
-tracker status
+clockman status
 # Output: Currently tracking: "Fix authentication bug" (2h 34m) [backend, bug]
 ```
 
-### `tracker log`
+### `clockman log`
 
 View your complete work history.
 
 ```bash
-tracker log
+clockman log
 # Shows formatted table with all sessions, durations, and tags
 ```
 
-### `tracker version`
+### `clockman version`
 
 Display version information.
 
 ```bash
-tracker version
+clockman version
 ```
 
 ## Usage Examples
@@ -99,35 +99,35 @@ tracker version
 
 ```bash
 # Morning standup prep
-tracker start "Review PRs and plan day" --tag planning
+clockman start "Review PRs and plan day" --tag planning
 
 # Main development work
-tracker start "Implement user authentication" --tag feature --tag auth
+clockman start "Implement user authentication" --tag feature --tag auth
 
 # Bug fixing session
-tracker start "Fix CSS layout issues" --tag bugfix --tag frontend
+clockman start "Fix CSS layout issues" --tag bugfix --tag frontend
 
 # Code review
-tracker start "Review team PRs" --tag review
+clockman start "Review team PRs" --tag review
 
 # End of day
-tracker log  # Review what you accomplished
+clockman log  # Review what you accomplished
 ```
 
 ### Project Organization with Tags
 
 ```bash
 # Frontend work
-tracker start "Component refactoring" --tag frontend --tag react
+clockman start "Component refactoring" --tag frontend --tag react
 
 # Backend API development
-tracker start "REST API endpoints" --tag backend --tag api
+clockman start "REST API endpoints" --tag backend --tag api
 
 # DevOps and deployment
-tracker start "CI/CD pipeline setup" --tag devops --tag deployment
+clockman start "CI/CD pipeline setup" --tag devops --tag deployment
 
 # Testing
-tracker start "Unit test coverage" --tag testing --tag quality
+clockman start "Unit test coverage" --tag testing --tag quality
 ```
 
 ## Configuration

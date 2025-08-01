@@ -14,7 +14,7 @@ from uuid import uuid4
 import pytest
 from typer.testing import CliRunner
 
-from clockman.cli.main import app, get_tracker
+from clockman.cli.main import app, get_clockman
 from clockman.core.time_tracker import (
     TimeTracker,
 )
@@ -28,7 +28,7 @@ class TestCLIMain:
         """Set up test fixtures."""
         self.runner = CliRunner()
 
-    @patch("clockman.cli.main.get_tracker")
+    @patch("clockman.cli.main.get_clockman")
     def test_start_command_success(self, mock_get_tracker: Mock) -> None:
         """Test successful start command."""
         # Arrange
@@ -47,7 +47,7 @@ class TestCLIMain:
             task_name="Test Task", tags=[], description=None
         )
 
-    @patch("clockman.cli.main.get_tracker")
+    @patch("clockman.cli.main.get_clockman")
     def test_start_command_with_tags_and_description(
         self, mock_get_tracker: Mock
     ) -> None:
@@ -82,11 +82,11 @@ class TestCLIMain:
             task_name="Test Task", tags=["tag1", "tag2"], description="Test description"
         )
 
-    @patch("clockman.cli.main.get_tracker")
-    def test_start_command_stops_active_session(self, mock_get_tracker: Mock) -> None:
+    @patch("clockman.cli.main.get_clockman")
+    def test_start_command_stops_active_session(self, mock_get_clockman: Mock) -> None:
         """Test start command stops existing active session."""
         # Arrange
-        mock_tracker = Mock()
+        mock_clockman = Mock()
         active_session = TimeSession(
             task_name="Previous Task",
             start_time=datetime.now(timezone.utc),
@@ -94,9 +94,9 @@ class TestCLIMain:
             description="Previous active task",
             end_time=None,
         )
-        mock_tracker.get_active_session.return_value = active_session
-        mock_tracker.start_session.return_value = uuid4()
-        mock_get_tracker.return_value = mock_tracker
+        mock_clockman.get_active_session.return_value = active_session
+        mock_clockman.start_session.return_value = uuid4()
+        mock_get_clockman.return_value = mock_clockman
 
         # Act
         result = self.runner.invoke(app, ["start", "New Task"])
@@ -105,16 +105,16 @@ class TestCLIMain:
         assert result.exit_code == 0
         assert "Stopped previous task: Previous Task" in result.stdout
         assert "Started tracking: New Task" in result.stdout
-        mock_tracker.stop_session.assert_called_once()
-        mock_tracker.start_session.assert_called_once()
+        mock_clockman.stop_session.assert_called_once()
+        mock_clockman.start_session.assert_called_once()
 
-    @patch("clockman.cli.main.get_tracker")
-    def test_start_command_error_handling(self, mock_get_tracker: Mock) -> None:
+    @patch("clockman.cli.main.get_clockman")
+    def test_start_command_error_handling(self, mock_get_clockman: Mock) -> None:
         """Test start command error handling."""
         # Arrange
-        mock_tracker = Mock()
-        mock_tracker.get_active_session.side_effect = Exception("Database error")
-        mock_get_tracker.return_value = mock_tracker
+        mock_clockman = Mock()
+        mock_clockman.get_active_session.side_effect = Exception("Database error")
+        mock_get_clockman.return_value = mock_clockman
 
         # Act
         result = self.runner.invoke(app, ["start", "Test Task"])
@@ -123,11 +123,11 @@ class TestCLIMain:
         assert result.exit_code == 1
         assert "Error starting task: Database error" in result.stdout
 
-    @patch("clockman.cli.main.get_tracker")
-    def test_stop_command_success(self, mock_get_tracker: Mock) -> None:
+    @patch("clockman.cli.main.get_clockman")
+    def test_stop_command_success(self, mock_get_clockman: Mock) -> None:
         """Test successful stop command."""
         # Arrange
-        mock_tracker = Mock()
+        mock_clockman = Mock()
         active_session = TimeSession(
             task_name="Test Task",
             start_time=datetime.now(timezone.utc) - timedelta(hours=1),
@@ -135,9 +135,9 @@ class TestCLIMain:
             description="Test description",
             is_active=False,
         )
-        mock_tracker.get_active_session.return_value = active_session
-        mock_tracker.stop_session.return_value = active_session
-        mock_get_tracker.return_value = mock_tracker
+        mock_clockman.get_active_session.return_value = active_session
+        mock_clockman.stop_session.return_value = active_session
+        mock_get_clockman.return_value = mock_clockman
 
         # Act
         result = self.runner.invoke(app, ["stop"])
@@ -146,15 +146,15 @@ class TestCLIMain:
         assert result.exit_code == 0
         assert "Stopped: Test Task" in result.stdout
         assert "Duration:" in result.stdout
-        mock_tracker.stop_session.assert_called_once()
+        mock_clockman.stop_session.assert_called_once()
 
-    @patch("clockman.cli.main.get_tracker")
-    def test_stop_command_no_active_session(self, mock_get_tracker: Mock) -> None:
+    @patch("clockman.cli.main.get_clockman")
+    def test_stop_command_no_active_session(self, mock_get_clockman: Mock) -> None:
         """Test stop command with no active session."""
         # Arrange
-        mock_tracker = Mock()
-        mock_tracker.get_active_session.return_value = None
-        mock_get_tracker.return_value = mock_tracker
+        mock_clockman = Mock()
+        mock_clockman.get_active_session.return_value = None
+        mock_get_clockman.return_value = mock_clockman
 
         # Act
         result = self.runner.invoke(app, ["stop"])
@@ -162,15 +162,15 @@ class TestCLIMain:
         # Assert
         assert result.exit_code == 0
         assert "No active session to stop" in result.stdout
-        mock_tracker.stop_session.assert_not_called()
+        mock_clockman.stop_session.assert_not_called()
 
-    @patch("clockman.cli.main.get_tracker")
-    def test_stop_command_error_handling(self, mock_get_tracker: Mock) -> None:
+    @patch("clockman.cli.main.get_clockman")
+    def test_stop_command_error_handling(self, mock_get_clockman: Mock) -> None:
         """Test stop command error handling."""
         # Arrange
-        mock_tracker = Mock()
-        mock_tracker.get_active_session.side_effect = Exception("Database error")
-        mock_get_tracker.return_value = mock_tracker
+        mock_clockman = Mock()
+        mock_clockman.get_active_session.side_effect = Exception("Database error")
+        mock_get_clockman.return_value = mock_clockman
 
         # Act
         result = self.runner.invoke(app, ["stop"])
@@ -179,11 +179,11 @@ class TestCLIMain:
         assert result.exit_code == 1
         assert "Error stopping session: Database error" in result.stdout
 
-    @patch("clockman.cli.main.get_tracker")
-    def test_status_command_with_active_session(self, mock_get_tracker: Mock) -> None:
+    @patch("clockman.cli.main.get_clockman")
+    def test_status_command_with_active_session(self, mock_get_clockman: Mock) -> None:
         """Test status command with active session."""
         # Arrange
-        mock_tracker = Mock()
+        mock_clockman = Mock()
         active_session = TimeSession(
             task_name="Test Task",
             description="Test description",
@@ -192,8 +192,8 @@ class TestCLIMain:
             end_time=None,
             is_active=True,
         )
-        mock_tracker.get_active_session.return_value = active_session
-        mock_get_tracker.return_value = mock_tracker
+        mock_clockman.get_active_session.return_value = active_session
+        mock_get_clockman.return_value = mock_clockman
 
         # Act
         result = self.runner.invoke(app, ["status"])
@@ -205,13 +205,13 @@ class TestCLIMain:
         assert "Test description" in result.stdout
         assert any(tag_set in result.stdout for tag_set in ["tag1, tag2", "tag2, tag1"])
 
-    @patch("clockman.cli.main.get_tracker")
-    def test_status_command_no_active_session(self, mock_get_tracker: Mock) -> None:
+    @patch("clockman.cli.main.get_clockman")
+    def test_status_command_no_active_session(self, mock_get_clockman: Mock) -> None:
         """Test status command with no active session."""
         # Arrange
-        mock_tracker = Mock()
-        mock_tracker.get_active_session.return_value = None
-        mock_get_tracker.return_value = mock_tracker
+        mock_clockman = Mock()
+        mock_clockman.get_active_session.return_value = None
+        mock_get_clockman.return_value = mock_clockman
 
         # Act
         result = self.runner.invoke(app, ["status"])
@@ -220,13 +220,13 @@ class TestCLIMain:
         assert result.exit_code == 0
         assert "No active session" in result.stdout
 
-    @patch("clockman.cli.main.get_tracker")
-    def test_status_command_error_handling(self, mock_get_tracker: Mock) -> None:
+    @patch("clockman.cli.main.get_clockman")
+    def test_status_command_error_handling(self, mock_get_clockman: Mock) -> None:
         """Test status command error handling."""
         # Arrange
-        mock_tracker = Mock()
-        mock_tracker.get_active_session.side_effect = Exception("Database error")
-        mock_get_tracker.return_value = mock_tracker
+        mock_clockman = Mock()
+        mock_clockman.get_active_session.side_effect = Exception("Database error")
+        mock_get_clockman.return_value = mock_clockman
 
         # Act
         result = self.runner.invoke(app, ["status"])
@@ -235,15 +235,15 @@ class TestCLIMain:
         assert result.exit_code == 1
         assert "Error getting status: Database error" in result.stdout
 
-    @patch("clockman.cli.main.get_tracker")
+    @patch("clockman.cli.main.get_clockman")
     @patch("datetime.date")
     def test_log_command_today_with_entries(
-        self, mock_date: Mock, mock_get_tracker: Mock
+        self, mock_date: Mock, mock_get_clockman: Mock
     ) -> None:
         """Test log command showing today's entries."""
         # Arrange
         mock_date.today.return_value = datetime(2024, 1, 1).date()
-        mock_tracker = Mock()
+        mock_clockman = Mock()
         now = datetime.now(timezone.utc)
         sessions = [
             TimeSession(
@@ -263,8 +263,8 @@ class TestCLIMain:
             ),
         ]
 
-        mock_tracker.get_entries_for_date.return_value = sessions
-        mock_get_tracker.return_value = mock_tracker
+        mock_clockman.get_entries_for_date.return_value = sessions
+        mock_get_clockman.return_value = mock_clockman
 
         # Act
         result = self.runner.invoke(app, ["log"])
@@ -280,11 +280,11 @@ class TestCLIMain:
         assert "Active" in result.stdout
         assert "Total:" in result.stdout
 
-    @patch("clockman.cli.main.get_tracker")
-    def test_log_command_recent_entries(self, mock_get_tracker: Mock) -> None:
+    @patch("clockman.cli.main.get_clockman")
+    def test_log_command_recent_entries(self, mock_get_clockman: Mock) -> None:
         """Test log command showing recent entries."""
         # Arrange
-        mock_tracker = Mock()
+        mock_clockman = Mock()
         now = datetime.now(timezone.utc)
 
         sessions = [
@@ -297,8 +297,8 @@ class TestCLIMain:
             )
         ]
 
-        mock_tracker.get_entries_for_date.return_value = sessions
-        mock_get_tracker.return_value = mock_tracker
+        mock_clockman.get_entries_for_date.return_value = sessions
+        mock_get_clockman.return_value = mock_clockman
 
         # Act
         result = self.runner.invoke(app, ["log", "--limit", "5"])
@@ -308,13 +308,13 @@ class TestCLIMain:
         assert "Today's Time Entries" in result.stdout
         assert "Recent Task" in result.stdout
 
-    @patch("clockman.cli.main.get_tracker")
-    def test_log_command_no_entries(self, mock_get_tracker: Mock) -> None:
+    @patch("clockman.cli.main.get_clockman")
+    def test_log_command_no_entries(self, mock_get_clockman: Mock) -> None:
         """Test log command with no entries."""
         # Arrange
-        mock_tracker = Mock()
-        mock_tracker.get_entries_for_date.return_value = []
-        mock_get_tracker.return_value = mock_tracker
+        mock_clockman = Mock()
+        mock_clockman.get_entries_for_date.return_value = []
+        mock_get_clockman.return_value = mock_clockman
 
         # Act
         result = self.runner.invoke(app, ["log"])
@@ -323,13 +323,13 @@ class TestCLIMain:
         assert result.exit_code == 0
         assert "No entries found" in result.stdout
 
-    @patch("clockman.cli.main.get_tracker")
-    def test_log_command_error_handling(self, mock_get_tracker: Mock) -> None:
+    @patch("clockman.cli.main.get_clockman")
+    def test_log_command_error_handling(self, mock_get_clockman: Mock) -> None:
         """Test log command error handling."""
         # Arrange
-        mock_tracker = Mock()
-        mock_tracker.get_entries_for_date.side_effect = Exception("Database error")
-        mock_get_tracker.return_value = mock_tracker
+        mock_clockman = Mock()
+        mock_clockman.get_entries_for_date.side_effect = Exception("Database error")
+        mock_get_clockman.return_value = mock_clockman
 
         # Act
         result = self.runner.invoke(app, ["log"])
@@ -359,36 +359,36 @@ class TestCLIMain:
 
     @patch("clockman.cli.main.get_config_manager")
     def test_get_tracker_initialization(self, mock_get_config_manager: Mock) -> None:
-        """Test tracker initialization."""
+        """Test clockman initialization."""
         # Arrange
         mock_config = Mock()
         mock_config.get_data_dir.return_value = "/tmp/test"
         mock_get_config_manager.return_value = mock_config
 
         # Act
-        tracker = get_tracker()
+        clockman = get_clockman()
 
         # Assert
-        assert tracker is not None
-        assert isinstance(tracker, TimeTracker)
+        assert clockman is not None
+        assert isinstance(clockman, TimeTracker)
         mock_get_config_manager.assert_called_once()
 
     @patch("clockman.cli.main.get_config_manager")
-    def test_get_tracker_singleton(self, mock_get_config_manager: Mock) -> None:
-        """Test that get_tracker returns the same instance."""
+    def test_get_clockman_singleton(self, mock_get_config_manager: Mock) -> None:
+        """Test that get_clockman returns the same instance."""
         # Arrange
         mock_config = Mock()
         mock_config.get_data_dir.return_value = "/tmp/test"
         mock_get_config_manager.return_value = mock_config
 
-        # Clear any existing tracker
+        # Clear any existing clockman
         import clockman.cli.main
 
-        clockman.cli.main.tracker = None
+        clockman.cli.main.clockman = None
 
         # Act
-        tracker1 = get_tracker()
-        tracker2 = get_tracker()
+        tracker1 = get_clockman()
+        tracker2 = get_clockman()
 
         # Assert
         assert tracker1 is tracker2
@@ -486,16 +486,16 @@ class TestCLICommandValidation:
         assert result.exit_code != 0
         assert "Missing argument" in result.output or "Usage:" in result.output
 
-    @patch("clockman.cli.main.get_tracker")
+    @patch("clockman.cli.main.get_clockman")
     def test_start_command_empty_task_name_handled(
-        self, mock_get_tracker: Mock
+        self, mock_get_clockman: Mock
     ) -> None:
         """Test that empty task name is handled gracefully."""
         # Arrange
-        mock_tracker = Mock()
-        mock_tracker.get_active_session.return_value = None
-        mock_tracker.start_session.return_value = uuid4()
-        mock_get_tracker.return_value = mock_tracker
+        mock_clockman = Mock()
+        mock_clockman.get_active_session.return_value = None
+        mock_clockman.start_session.return_value = uuid4()
+        mock_get_clockman.return_value = mock_clockman
 
         # Act
         result = self.runner.invoke(app, ["start", ""])

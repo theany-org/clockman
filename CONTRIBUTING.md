@@ -152,10 +152,10 @@ Example test structure:
 def test_start_tracking_session():
     """Test starting a new tracking session."""
     # Arrange
-    tracker = TimeTracker()
+    clockman = TimeTracker()
 
     # Act
-    session = tracker.start("Test task", tags=["test"])
+    session = clockman.start("Test task", tags=["test"])
 
     # Assert
     assert session.description == "Test task"
@@ -297,9 +297,9 @@ Brief description of the bug
 
 **Steps to Reproduce:**
 
-1. Run `tracker start "test"`
+1. Run `clockman start "test"`
 2. Wait 5 minutes
-3. Run `tracker status`
+3. Run `clockman status`
 4. Observe incorrect time display
 
 **Expected Behavior:**
