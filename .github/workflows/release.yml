@@ -158,8 +158,17 @@ jobs:
           path: dist/
 
       - name: Install from wheel
+        shell: bash
         run: |
-          pip install dist/*.whl
+          # Find and install the wheel file (cross-platform solution)
+          WHEEL_FILE=$(find dist/ -name "*.whl" -type f | head -n1)
+          if [ -z "$WHEEL_FILE" ]; then
+            echo "No wheel file found in dist/"
+            ls -la dist/
+            exit 1
+          fi
+          echo "Installing wheel: $WHEEL_FILE"
+          pip install "$WHEEL_FILE"
 
       - name: Install system dependencies (Ubuntu)
         if: runner.os == 'Linux'
@@ -255,7 +264,7 @@ jobs:
     timeout-minutes: 10
     needs: [validate-release, build, test-install, create-release]
     environment:
-      name: pypi
+      name: production
       url: https://pypi.org/p/trackit/
     steps:
       - name: Download build artifacts
@@ -277,7 +286,7 @@ jobs:
     needs: [validate-release, build, test-install]
     if: contains(needs.validate-release.outputs.version, '-') || github.event.inputs.prerelease == 'true'
     environment:
-      name: testpypi
+      name: test
       url: https://test.pypi.org/p/trackit/
     steps:
       - name: Download build artifacts
