@@ -42,9 +42,7 @@ jobs:
       - name: Install system dependencies (Ubuntu)
         run: |
           sudo apt-get update
-          # Try newer package name first (Ubuntu 24.04+), fallback to older name
-          sudo apt-get install -y xvfb libgtk-3-0 libgdk-pixbuf2.0-0 libxss1 libasound2t64 || \
-          sudo apt-get install -y xvfb libgtk-3-0 libgdk-pixbuf2.0-0 libxss1 libasound2
+          sudo apt-get install -y xvfb libgtk-3-0 libgdk-pixbuf2.0-0 libxss1
 
       - name: Install dependencies
         run: |
@@ -167,9 +165,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          # Try newer package name first (Ubuntu 24.04+), fallback to older name
-          sudo apt-get install -y xvfb libgtk-3-0 libgdk-pixbuf2.0-0 libxss1 libasound2t64 || \
-          sudo apt-get install -y xvfb libgtk-3-0 libgdk-pixbuf2.0-0 libxss1 libasound2
+          sudo apt-get install -y xvfb libgtk-3-0 libgdk-pixbuf2.0-0 libxss1
 
       - name: Test CLI functionality
         env:
