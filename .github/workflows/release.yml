@@ -280,6 +280,7 @@ jobs:
         with:
           verbose: true
           print-hash: true
+          password: ${{ secrets.PYPI_API_TOKEN }}
 
   publish-test-pypi:
     name: Publish to Test PyPI
