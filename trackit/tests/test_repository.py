@@ -105,10 +105,13 @@ class TestSessionRepository:
         session_repository.create_session(active_session)
 
         # Create inactive session too
+        start_time = datetime.now(timezone.utc)
+        end_time = start_time + timedelta(minutes=30)
         inactive_session = TimeSession(
             task_name="Inactive Task",
             description="Inactive session",
-            end_time=datetime.now(timezone.utc),
+            start_time=start_time,
+            end_time=end_time,
             is_active=False,
         )
         session_repository.create_session(inactive_session)
@@ -124,10 +127,13 @@ class TestSessionRepository:
     def test_get_active_session_with_none_active(self, session_repository) -> None:
         """Test getting active session when none exists."""
         # Arrange - create only inactive sessions
+        start_time = datetime.now(timezone.utc)
+        end_time = start_time + timedelta(minutes=30)
         inactive_session = TimeSession(
             task_name="Inactive Task",
             description="Inactive session",
-            end_time=datetime.now(timezone.utc),
+            start_time=start_time,
+            end_time=end_time,
             is_active=False,
         )
         session_repository.create_session(inactive_session)
@@ -774,11 +780,14 @@ class TestSessionRepositoryIntegration:
         ]
 
         created_sessions = []
-        for task_name, tags, is_active in sessions_data:
-            end_time = None if is_active else datetime.now(timezone.utc)
+        base_time = datetime.now(timezone.utc)
+        for i, (task_name, tags, is_active) in enumerate(sessions_data):
+            start_time = base_time + timedelta(minutes=i * 60)  # Stagger start times
+            end_time = None if is_active else start_time + timedelta(minutes=30)
             session = TimeSession(
                 task_name=task_name,
                 tags=tags,
+                start_time=start_time,
                 end_time=end_time,
                 is_active=is_active,
                 description=f"Session for {task_name}",

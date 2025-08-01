@@ -212,9 +212,14 @@ class TestTimeTracker:
 
         # Create sessions on target date
         with patch("trackit.core.time_tracker.datetime") as mock_datetime:
-            mock_datetime.now.return_value = datetime(
-                2024, 1, 1, 10, 0, tzinfo=timezone.utc
-            )
+            # Create a time sequence for start/stop operations
+            time_sequence = [
+                datetime(2024, 1, 1, 10, 0, 0, tzinfo=timezone.utc),  # start task 1
+                datetime(2024, 1, 1, 10, 1, 0, tzinfo=timezone.utc),  # stop task 1
+                datetime(2024, 1, 1, 10, 2, 0, tzinfo=timezone.utc),  # start task 2
+                datetime(2024, 1, 1, 10, 3, 0, tzinfo=timezone.utc),  # stop task 2
+            ]
+            mock_datetime.now.side_effect = time_sequence
             mock_datetime.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
             session_id1 = time_tracker.start_session("Task 1")
@@ -240,26 +245,27 @@ class TestTimeTracker:
 
         # Create sessions across different dates
         with patch("trackit.core.time_tracker.datetime") as mock_datetime:
+            # Create a time sequence for start/stop operations across multiple dates
+            time_sequence = [
+                # Session 1 on 2024-01-01
+                datetime(2024, 1, 1, 10, 0, 0, tzinfo=timezone.utc),  # start task 1
+                datetime(2024, 1, 1, 10, 1, 0, tzinfo=timezone.utc),  # stop task 1
+                # Session 2 on 2024-01-02
+                datetime(2024, 1, 2, 10, 0, 0, tzinfo=timezone.utc),  # start task 2
+                datetime(2024, 1, 2, 10, 1, 0, tzinfo=timezone.utc),  # stop task 2
+                # Session 3 on 2024-01-05 (outside range)
+                datetime(2024, 1, 5, 10, 0, 0, tzinfo=timezone.utc),  # start task 3
+                datetime(2024, 1, 5, 10, 1, 0, tzinfo=timezone.utc),  # stop task 3
+            ]
+            mock_datetime.now.side_effect = time_sequence
             mock_datetime.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
-            # Session on 2024-01-01
-            mock_datetime.now.return_value = datetime(
-                2024, 1, 1, 10, 0, tzinfo=timezone.utc
-            )
             session_id1 = time_tracker.start_session("Task 1")
             time_tracker.stop_session(session_id1)
 
-            # Session on 2024-01-02
-            mock_datetime.now.return_value = datetime(
-                2024, 1, 2, 10, 0, tzinfo=timezone.utc
-            )
             session_id2 = time_tracker.start_session("Task 2")
             time_tracker.stop_session(session_id2)
 
-            # Session on 2024-01-05 (outside range)
-            mock_datetime.now.return_value = datetime(
-                2024, 1, 5, 10, 0, tzinfo=timezone.utc
-            )
             session_id3 = time_tracker.start_session("Task 3")
             time_tracker.stop_session(session_id3)
 
@@ -341,9 +347,14 @@ class TestTimeTracker:
         target_date = date(2024, 1, 1)
 
         with patch("trackit.core.time_tracker.datetime") as mock_datetime:
-            mock_datetime.now.return_value = datetime(
-                2024, 1, 1, 10, 0, tzinfo=timezone.utc
-            )
+            # Create a time sequence for start/stop operations
+            time_sequence = [
+                datetime(2024, 1, 1, 10, 0, 0, tzinfo=timezone.utc),  # start task 1
+                datetime(2024, 1, 1, 10, 1, 0, tzinfo=timezone.utc),  # stop task 1
+                datetime(2024, 1, 1, 10, 2, 0, tzinfo=timezone.utc),  # start task 2
+                datetime(2024, 1, 1, 10, 3, 0, tzinfo=timezone.utc),  # stop task 2
+            ]
+            mock_datetime.now.side_effect = time_sequence
             mock_datetime.side_effect = lambda *args, **kw: datetime(*args, **kw)
 
             # Create and complete sessions

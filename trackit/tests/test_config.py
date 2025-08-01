@@ -126,20 +126,36 @@ class TestConfigManager:
 
     def test_get_simple_key(self) -> None:
         """Test getting simple configuration value."""
-        config_manager = ConfigManager()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            with (
+                patch("trackit.utils.config.user_config_dir") as mock_config_dir,
+                patch("trackit.utils.config.user_data_dir") as mock_data_dir,
+            ):
+                mock_config_dir.return_value = str(Path(temp_dir) / "config")
+                mock_data_dir.return_value = str(Path(temp_dir) / "data")
 
-        # Act & Assert
-        assert config_manager.get("date_format") == "%Y-%m-%d"
-        assert config_manager.get("timezone") == "local"
+                config_manager = ConfigManager()
+
+                # Act & Assert
+                assert config_manager.get("date_format") == "%Y-%m-%d"
+                assert config_manager.get("timezone") == "local"
 
     def test_get_nested_key(self) -> None:
         """Test getting nested configuration value."""
-        config_manager = ConfigManager()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            with (
+                patch("trackit.utils.config.user_config_dir") as mock_config_dir,
+                patch("trackit.utils.config.user_data_dir") as mock_data_dir,
+            ):
+                mock_config_dir.return_value = str(Path(temp_dir) / "config")
+                mock_data_dir.return_value = str(Path(temp_dir) / "data")
 
-        # Act & Assert
-        assert config_manager.get("colors.active") == "green"
-        assert config_manager.get("display.show_seconds") is True
-        assert config_manager.get("display.compact_mode") is False
+                config_manager = ConfigManager()
+
+                # Act & Assert
+                assert config_manager.get("colors.active") == "green"
+                assert config_manager.get("display.show_seconds") is True
+                assert config_manager.get("display.compact_mode") is False
 
     def test_get_with_default(self) -> None:
         """Test getting value with default fallback."""
@@ -237,34 +253,58 @@ class TestConfigManager:
 
     def test_get_date_format(self) -> None:
         """Test getting date format."""
-        config_manager = ConfigManager()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            with (
+                patch("trackit.utils.config.user_config_dir") as mock_config_dir,
+                patch("trackit.utils.config.user_data_dir") as mock_data_dir,
+            ):
+                mock_config_dir.return_value = str(Path(temp_dir) / "config")
+                mock_data_dir.return_value = str(Path(temp_dir) / "data")
 
-        # Act & Assert
-        assert config_manager.get_date_format() == "%Y-%m-%d"
+                config_manager = ConfigManager()
 
-        # Test custom format
-        config_manager.set("date_format", "%d/%m/%Y")
-        assert config_manager.get_date_format() == "%d/%m/%Y"
+                # Act & Assert
+                assert config_manager.get_date_format() == "%Y-%m-%d"
+
+                # Test custom format
+                config_manager.set("date_format", "%d/%m/%Y")
+                assert config_manager.get_date_format() == "%d/%m/%Y"
 
     def test_get_time_format(self) -> None:
         """Test getting time format."""
-        config_manager = ConfigManager()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            with (
+                patch("trackit.utils.config.user_config_dir") as mock_config_dir,
+                patch("trackit.utils.config.user_data_dir") as mock_data_dir,
+            ):
+                mock_config_dir.return_value = str(Path(temp_dir) / "config")
+                mock_data_dir.return_value = str(Path(temp_dir) / "data")
 
-        # Act & Assert
-        assert config_manager.get_time_format() == "%H:%M:%S"
+                config_manager = ConfigManager()
 
-        # Test custom format
-        config_manager.set("time_format", "%I:%M %p")
-        assert config_manager.get_time_format() == "%I:%M %p"
+                # Act & Assert
+                assert config_manager.get_time_format() == "%H:%M:%S"
+
+                # Test custom format
+                config_manager.set("time_format", "%I:%M %p")
+                assert config_manager.get_time_format() == "%I:%M %p"
 
     def test_get_color(self) -> None:
         """Test getting UI element colors."""
-        config_manager = ConfigManager()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            with (
+                patch("trackit.utils.config.user_config_dir") as mock_config_dir,
+                patch("trackit.utils.config.user_data_dir") as mock_data_dir,
+            ):
+                mock_config_dir.return_value = str(Path(temp_dir) / "config")
+                mock_data_dir.return_value = str(Path(temp_dir) / "data")
 
-        # Act & Assert
-        assert config_manager.get_color("active") == "green"
-        assert config_manager.get_color("inactive") == "dim"
-        assert config_manager.get_color("nonexistent") == "white"  # Default
+                config_manager = ConfigManager()
+
+                # Act & Assert
+                assert config_manager.get_color("active") == "green"
+                assert config_manager.get_color("inactive") == "dim"
+                assert config_manager.get_color("nonexistent") == "white"  # Default
 
     def test_is_compact_mode(self) -> None:
         """Test checking compact mode setting."""
@@ -457,28 +497,44 @@ class TestConfigManager:
 
     def test_default_config_structure(self) -> None:
         """Test default configuration has expected structure."""
-        config_manager = ConfigManager()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            with (
+                patch("trackit.utils.config.user_config_dir") as mock_config_dir,
+                patch("trackit.utils.config.user_data_dir") as mock_data_dir,
+            ):
+                mock_config_dir.return_value = str(Path(temp_dir) / "config")
+                mock_data_dir.return_value = str(Path(temp_dir) / "data")
 
-        # Act & Assert - check all expected keys exist
-        assert config_manager.get("data_directory") is not None
-        assert config_manager.get("date_format") == "%Y-%m-%d"
-        assert config_manager.get("time_format") == "%H:%M:%S"
-        assert config_manager.get("timezone") == "local"
-        assert config_manager.get("default_tags") == []
-        assert config_manager.get("auto_stop_inactive") is False
-        assert config_manager.get("inactive_timeout_minutes") == 30
+                config_manager = ConfigManager()
 
-        # Check colors section
-        assert config_manager.get("colors.active") == "green"
-        assert config_manager.get("colors.inactive") == "dim"
-        assert config_manager.get("colors.duration") == "cyan"
-        assert config_manager.get("colors.task_name") == "bold"
-        assert config_manager.get("colors.tags") == "yellow"
+                # Act & Assert - check all expected keys exist
+                assert config_manager.get("data_directory") is not None
+                assert config_manager.get("date_format") == "%Y-%m-%d"
+                assert config_manager.get("time_format") == "%H:%M:%S"
+                assert config_manager.get("timezone") == "local"
+                assert config_manager.get("default_tags") == []
+                assert config_manager.get("auto_stop_inactive") is False
+                assert config_manager.get("inactive_timeout_minutes") == 30
 
-        # Check display section
-        assert config_manager.get("display.show_seconds") is True
-        assert config_manager.get("display.compact_mode") is False
-        assert config_manager.get("display.max_task_name_length") == 50
+                # Check colors section
+                assert config_manager.get("colors.active") == "green"
+                assert config_manager.get("colors.inactive") == "dim"
+                assert config_manager.get("colors.duration") == "cyan"
+                assert config_manager.get("colors.task_name") == "bold"
+                assert config_manager.get("colors.tags") == "yellow"
+
+                # Check display section
+                assert config_manager.get("display.show_seconds") is True
+                assert config_manager.get("display.compact_mode") is False
+                assert config_manager.get("display.max_task_name_length") == 50
+
+                # Check notifications section (added with notification service)
+                assert config_manager.get("notifications.enabled") is True
+                assert config_manager.get("notifications.timeout_ms") == 5000
+                assert config_manager.get("notifications.fallback_to_log") is True
+                assert config_manager.get("notifications.show_task_start") is True
+                assert config_manager.get("notifications.show_task_stop") is True
+                assert config_manager.get("notifications.show_errors") is True
 
 
 class TestGlobalConfigManager:

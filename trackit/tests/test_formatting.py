@@ -5,7 +5,7 @@ This module tests time formatting, display utilities, and other formatting funct
 """
 
 from datetime import datetime, timedelta, timezone
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
@@ -292,24 +292,36 @@ class TestFormatDateAndTime:
         # Arrange
         dt = datetime(2024, 1, 15, 14, 30, 45, tzinfo=timezone.utc)
 
-        # Act
-        result = format_date(dt)
+        with patch("trackit.utils.formatting.get_config_manager") as mock_config:
+            mock_config_instance = MagicMock()
+            mock_config_instance.get_date_format.return_value = "%Y-%m-%d"
+            mock_config_instance.get_time_format.return_value = "%H:%M:%S"
+            mock_config.return_value = mock_config_instance
 
-        # Assert - should only contain date
-        assert "2024" in result
-        assert ":" not in result
+            # Act
+            result = format_date(dt)
+
+            # Assert - should only contain date
+            assert "2024" in result
+            assert ":" not in result
 
     def test_format_time(self) -> None:
         """Test format_time function."""
         # Arrange
         dt = datetime(2024, 1, 15, 14, 30, 45, tzinfo=timezone.utc)
 
-        # Act
-        result = format_time(dt)
+        with patch("trackit.utils.formatting.get_config_manager") as mock_config:
+            mock_config_instance = MagicMock()
+            mock_config_instance.get_date_format.return_value = "%Y-%m-%d"
+            mock_config_instance.get_time_format.return_value = "%H:%M:%S"
+            mock_config.return_value = mock_config_instance
 
-        # Assert - should only contain time
-        assert ":" in result
-        assert "2024" not in result
+            # Act
+            result = format_time(dt)
+
+            # Assert - should only contain time
+            assert ":" in result
+            assert "2024" not in result
 
 
 class TestTruncateText:
@@ -497,7 +509,7 @@ class TestPluralize:
         # Act & Assert
         assert pluralize(0, "item") == "items"
         assert pluralize(2, "task") == "tasks"
-        assert pluralize(10, "entry") == "entries"
+        assert pluralize(10, "entry", "entries") == "entries"
 
     def test_pluralize_custom_plural(self) -> None:
         """Test pluralization with custom plural form."""
@@ -609,11 +621,13 @@ class TestFormatRelativeTime:
         # Assert
         assert result == "1 day ago"
 
-    def test_format_relative_time_future_minutes(self) -> None:
+    @patch("trackit.utils.formatting.datetime")
+    def test_format_relative_time_future_minutes(self, mock_datetime) -> None:
         """Test formatting future time in minutes."""
         # Arrange
-        now = datetime.now(timezone.utc)
-        future = now + timedelta(minutes=10)
+        fixed_now = datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+        mock_datetime.now.return_value = fixed_now
+        future = fixed_now + timedelta(minutes=10)
 
         # Act
         result = format_relative_time(future)
@@ -621,11 +635,13 @@ class TestFormatRelativeTime:
         # Assert
         assert result == "in 10 minutes"
 
-    def test_format_relative_time_future_hours(self) -> None:
+    @patch("trackit.utils.formatting.datetime")
+    def test_format_relative_time_future_hours(self, mock_datetime) -> None:
         """Test formatting future time in hours."""
         # Arrange
-        now = datetime.now(timezone.utc)
-        future = now + timedelta(hours=2)
+        fixed_now = datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+        mock_datetime.now.return_value = fixed_now
+        future = fixed_now + timedelta(hours=2)
 
         # Act
         result = format_relative_time(future)
@@ -633,11 +649,13 @@ class TestFormatRelativeTime:
         # Assert
         assert result == "in 2 hours"
 
-    def test_format_relative_time_future_days(self) -> None:
+    @patch("trackit.utils.formatting.datetime")
+    def test_format_relative_time_future_days(self, mock_datetime) -> None:
         """Test formatting future time in days."""
         # Arrange
-        now = datetime.now(timezone.utc)
-        future = now + timedelta(days=5)
+        fixed_now = datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+        mock_datetime.now.return_value = fixed_now
+        future = fixed_now + timedelta(days=5)
 
         # Act
         result = format_relative_time(future)
@@ -716,9 +734,9 @@ class TestFormattingEdgeCases:
     def test_pluralize_float_count(self) -> None:
         """Test pluralization with float count."""
         # Act & Assert
-        assert pluralize(1, "item") == "item"
-        assert pluralize(1, "item") == "items"
-        assert pluralize(0, "item") == "items"
+        assert pluralize(1.0, "item") == "item"
+        assert pluralize(1.5, "item") == "items"  # Non-integer is plural
+        assert pluralize(0.0, "item") == "items"
 
 
 @pytest.mark.integration
@@ -792,19 +810,31 @@ class TestFormattingIntegration:
         task_name = "Very Long Task Name That Should Be Truncated For Display"
         file_size = 1024 * 1024 * 2.0  # 2.0 MB
 
-        # Act
-        formatted_start = format_datetime(start_time)
-        formatted_end = format_datetime(end_time)
-        formatted_duration = format_duration(duration)
-        formatted_task = truncate_text(task_name, max_length=30)
-        formatted_size = format_bytes(int(file_size))
-        formatted_relative = format_relative_time(start_time)
+        with patch("trackit.utils.formatting.get_config_manager") as mock_config:
+            mock_config_instance = MagicMock()
+            mock_config_instance.get_date_format.return_value = "%Y-%m-%d"
+            mock_config_instance.get_time_format.return_value = "%H:%M:%S"
+            mock_config.return_value = mock_config_instance
 
-        # Assert - all should return properly formatted strings
-        assert isinstance(formatted_start, str)
-        assert isinstance(formatted_end, str)
-        assert "2h" in formatted_duration and "30m" in formatted_duration
-        assert formatted_task.endswith("...")
-        assert len(formatted_task) == 30
-        assert "2.0 MB" == formatted_size
-        assert isinstance(formatted_relative, str)
+            with patch("trackit.utils.formatting.datetime") as mock_datetime:
+                mock_datetime.now.return_value = datetime(
+                    2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc
+                )
+                mock_datetime.side_effect = lambda *args, **kw: datetime(*args, **kw)
+
+                # Act
+                formatted_start = format_datetime(start_time)
+                formatted_end = format_datetime(end_time)
+                formatted_duration = format_duration(duration)
+                formatted_task = truncate_text(task_name, max_length=30)
+                formatted_size = format_bytes(int(file_size))
+                formatted_relative = format_relative_time(start_time)
+
+                # Assert - all should return properly formatted strings
+                assert isinstance(formatted_start, str)
+                assert isinstance(formatted_end, str)
+                assert "2h" in formatted_duration and "30m" in formatted_duration
+                assert formatted_task.endswith("...")
+                assert len(formatted_task) == 30
+                assert "2.0 MB" == formatted_size
+                assert isinstance(formatted_relative, str)

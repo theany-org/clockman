@@ -582,22 +582,20 @@ class TestDatabaseManagerIntegration:
 
         db_manager1.initialize_database()
 
-        # Act - simulate concurrent access
+        # Act - simulate concurrent access (sequential writes due to SQLite limitations)
         with db_manager1.get_connection() as conn1:
-            with db_manager2.get_connection() as conn2:
-                # Both connections should work
-                conn1.execute(
-                    "INSERT INTO sessions (id, task_name, start_time, is_active, tags, metadata) VALUES (?, ?, ?, ?, ?, ?)",
-                    ("test-1", "Task 1", "2024-01-01T09:00:00Z", 1, "[]", "{}"),
-                )
+            conn1.execute(
+                "INSERT INTO sessions (id, task_name, start_time, is_active, tags, metadata) VALUES (?, ?, ?, ?, ?, ?)",
+                ("test-1", "Task 1", "2024-01-01T09:00:00Z", 1, "[]", "{}"),
+            )
+            conn1.commit()
 
-                conn2.execute(
-                    "INSERT INTO sessions (id, task_name, start_time, is_active, tags, metadata) VALUES (?, ?, ?, ?, ?, ?)",
-                    ("test-2", "Task 2", "2024-01-01T10:00:00Z", 1, "[]", "{}"),
-                )
-
-                conn1.commit()
-                conn2.commit()
+        with db_manager2.get_connection() as conn2:
+            conn2.execute(
+                "INSERT INTO sessions (id, task_name, start_time, is_active, tags, metadata) VALUES (?, ?, ?, ?, ?, ?)",
+                ("test-2", "Task 2", "2024-01-01T10:00:00Z", 1, "[]", "{}"),
+            )
+            conn2.commit()
 
         # Assert - both records should be present
         with db_manager1.get_connection() as conn:

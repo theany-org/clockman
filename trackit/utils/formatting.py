@@ -117,6 +117,10 @@ def truncate_text(text: str, max_length: Optional[int] = None) -> str:
     if len(text) <= max_length:
         return text
 
+    # If max_length is too small for full ellipsis, return partial ellipsis
+    if max_length < 3:
+        return "..."[:max_length]
+
     return text[: max_length - 3] + "..."
 
 
@@ -158,7 +162,7 @@ def format_percentage(value: float, total: float) -> str:
     return f"{percentage:.1f}%"
 
 
-def pluralize(count: int, singular: str, plural: Optional[str] = None) -> str:
+def pluralize(count: float, singular: str, plural: Optional[str] = None) -> str:
     """
     Return singular or plural form based on count.
 
@@ -173,7 +177,7 @@ def pluralize(count: int, singular: str, plural: Optional[str] = None) -> str:
     if plural is None:
         plural = singular + "s"
 
-    return singular if count == 1 else plural
+    return singular if abs(count) == 1 else plural
 
 
 def format_relative_time(dt: datetime) -> str:

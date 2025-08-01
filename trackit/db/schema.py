@@ -136,34 +136,52 @@ class DatabaseManager:
 
     def get_database_stats(self) -> Dict[str, Any]:
         """Get basic database statistics."""
-        with self.get_connection() as conn:
-            cursor = conn.execute(
-                """
-                SELECT 
-                    COUNT(*) as total_sessions,
-                    COUNT(CASE WHEN is_active = 1 THEN 1 END) as active_sessions,
-                    MIN(start_time) as first_session,
-                    MAX(start_time) as last_session
-                FROM sessions
-            """
-            )
-            result = cursor.fetchone()
+        # If database file doesn't exist, return zeros
+        if not self.db_path.exists():
+            return {
+                "total_sessions": 0,
+                "active_sessions": 0,
+                "first_session": None,
+                "last_session": None,
+                "database_size": 0,
+            }
 
-            if result:
-                return {
-                    "total_sessions": result["total_sessions"],
-                    "active_sessions": result["active_sessions"],
-                    "first_session": result["first_session"],
-                    "last_session": result["last_session"],
-                    "database_size": (
-                        self.db_path.stat().st_size if self.db_path.exists() else 0
-                    ),
-                }
-            else:
-                return {
-                    "total_sessions": 0,
-                    "active_sessions": 0,
-                    "first_session": None,
-                    "last_session": None,
-                    "database_size": 0,
-                }
+        try:
+            with self.get_connection() as conn:
+                cursor = conn.execute(
+                    """
+                    SELECT 
+                        COUNT(*) as total_sessions,
+                        COUNT(CASE WHEN is_active = 1 THEN 1 END) as active_sessions,
+                        MIN(start_time) as first_session,
+                        MAX(start_time) as last_session
+                    FROM sessions
+                """
+                )
+                result = cursor.fetchone()
+
+                if result:
+                    return {
+                        "total_sessions": result["total_sessions"],
+                        "active_sessions": result["active_sessions"],
+                        "first_session": result["first_session"],
+                        "last_session": result["last_session"],
+                        "database_size": self.db_path.stat().st_size,
+                    }
+                else:
+                    return {
+                        "total_sessions": 0,
+                        "active_sessions": 0,
+                        "first_session": None,
+                        "last_session": None,
+                        "database_size": self.db_path.stat().st_size,
+                    }
+        except sqlite3.OperationalError:
+            # Table doesn't exist, return basic stats
+            return {
+                "total_sessions": 0,
+                "active_sessions": 0,
+                "first_session": None,
+                "last_session": None,
+                "database_size": self.db_path.stat().st_size,
+            }

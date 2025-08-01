@@ -59,7 +59,7 @@ class TestTimeSession:
         assert session.id == session_id
         assert session.task_name == "Complete Task"
         assert session.description == "A comprehensive test task"
-        assert session.tags == ["development", "testing"]
+        assert set(session.tags) == {"development", "testing"}
         assert session.start_time == start_time
         assert session.end_time == end_time
         assert session.is_active is False
@@ -260,7 +260,10 @@ class TestTimeSession:
         assert session.id == session_id
         assert session.task_name == "From Dict"
         assert session.description == "Created from dictionary"
-        assert session.tags == ["dict", "test"]
+        assert set(session.tags) == {
+            "dict",
+            "test",
+        }  # Order not guaranteed due to normalization
         assert session.is_active is False
         assert session.metadata == {"source": "dict"}
 
