@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any, Dict, Generator, Optional
 
 # Database schema version
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 # SQL for creating tables
 CREATE_SESSIONS_TABLE = """
@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS sessions (
     id TEXT PRIMARY KEY,
     task_name TEXT NOT NULL,
     description TEXT,
+    project_id TEXT,  -- References projects.id
     tags TEXT,  -- JSON array of tags
     start_time TEXT NOT NULL,  -- ISO format datetime
     end_time TEXT,  -- ISO format datetime, NULL for active sessions
@@ -25,6 +26,21 @@ CREATE TABLE IF NOT EXISTS sessions (
     metadata TEXT,  -- JSON object for additional data
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+"""
+
+CREATE_PROJECTS_TABLE = """
+CREATE TABLE IF NOT EXISTS projects (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    description TEXT,
+    parent_id TEXT,  -- Self-referencing for hierarchy
+    is_active BOOLEAN NOT NULL DEFAULT 1,
+    default_tags TEXT,  -- JSON array of default tags
+    metadata TEXT,  -- JSON object for additional data
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (parent_id) REFERENCES projects(id) ON DELETE SET NULL
 );
 """
 
@@ -41,6 +57,10 @@ CREATE_INDEXES = [
     "CREATE INDEX IF NOT EXISTS idx_sessions_task_name ON sessions(task_name);",
     "CREATE INDEX IF NOT EXISTS idx_sessions_is_active ON sessions(is_active);",
     "CREATE INDEX IF NOT EXISTS idx_sessions_tags ON sessions(tags);",
+    "CREATE INDEX IF NOT EXISTS idx_sessions_project_id ON sessions(project_id);",
+    "CREATE INDEX IF NOT EXISTS idx_projects_name ON projects(name);",
+    "CREATE INDEX IF NOT EXISTS idx_projects_parent_id ON projects(parent_id);",
+    "CREATE INDEX IF NOT EXISTS idx_projects_is_active ON projects(is_active);",
 ]
 
 # Triggers for updating timestamps
@@ -50,6 +70,13 @@ CREATE_TRIGGERS = [
     AFTER UPDATE ON sessions
     BEGIN
         UPDATE sessions SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+    END;
+    """,
+    """
+    CREATE TRIGGER IF NOT EXISTS update_projects_timestamp 
+    AFTER UPDATE ON projects
+    BEGIN
+        UPDATE projects SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
     END;
     """
 ]
@@ -98,6 +125,7 @@ class DatabaseManager:
         """Create all database tables."""
         # Create main tables
         conn.execute(CREATE_SESSIONS_TABLE)
+        conn.execute(CREATE_PROJECTS_TABLE)
 
         # Create indexes
         for index_sql in CREATE_INDEXES:
@@ -125,9 +153,27 @@ class DatabaseManager:
         self, conn: sqlite3.Connection, from_version: int, to_version: int
     ) -> None:
         """Migrate database from one version to another."""
-        # Currently no migrations needed as this is version 1
-        # Future migrations would be implemented here
-        pass
+        if from_version == 1 and to_version >= 2:
+            # Migration from v1 to v2: Add project support
+            conn.execute("ALTER TABLE sessions ADD COLUMN project_id TEXT;")
+            conn.execute(CREATE_PROJECTS_TABLE)
+            
+            # Add new indexes
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_sessions_project_id ON sessions(project_id);")
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_projects_name ON projects(name);")
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_projects_parent_id ON projects(parent_id);")
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_projects_is_active ON projects(is_active);")
+            
+            # Add new trigger
+            conn.execute("""
+                CREATE TRIGGER IF NOT EXISTS update_projects_timestamp 
+                AFTER UPDATE ON projects
+                BEGIN
+                    UPDATE projects SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+                END;
+            """)
+            
+            self._set_schema_version(conn, 2)
 
     def vacuum_database(self) -> None:
         """Optimize the database by running VACUUM."""

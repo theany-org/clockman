@@ -31,20 +31,18 @@ dependencies = [
     "rich>=13.0.0",
     "platformdirs>=4.0.0",
     "pydantic>=2.5.0",
-    "desktop-notifier>=6.0.0"
+    "desktop-notifier>=6.0.0",
+    "httpx>=0.25.0",
+    "tenacity>=8.2.0"
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.4.0",
-    "pytest-cov>=4.1.0",
-    "pytest-mock>=3.11.0",
     "black>=23.0.0",
     "isort>=5.12.0",
     "flake8>=6.0.0",
     "mypy>=1.5.0",
-    "pre-commit>=3.4.0",
-    "pytest-asyncio>=0.25.0"
+    "pre-commit>=3.4.0"
 ]
 
 [project.scripts]
@@ -58,25 +56,6 @@ Issues = "https://github.com/theany-org/clockman/issues"
 [tool.hatch.build.targets.wheel]
 packages = ["clockman"]
 
-[tool.pytest.ini_options]
-testpaths = ["clockman/tests"]
-python_files = ["test_*.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
-addopts = [
-    "--strict-markers",
-    "--strict-config",
-    "--cov=clockman",
-    "--cov-report=html",
-    "--cov-report=term-missing",
-    "--cov-fail-under=90",
-]
-markers = [
-    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-    "integration: marks tests as integration tests",
-    "unit: marks tests as unit tests",
-    "asyncio: mark a test as using asyncio",
-]
 
 [tool.black]
 line-length = 88
@@ -117,7 +96,3 @@ warn_no_return = true
 warn_unreachable = true
 strict_equality = true
 
-[[tool.mypy.overrides]]
-module = ["tests.*"]
-disallow_untyped_defs = false
-disallow_incomplete_defs = false

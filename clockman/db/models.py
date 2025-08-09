@@ -4,7 +4,7 @@ Database models for Clockman.
 This module defines the Pydantic models for time tracking sessions and related data.
 """
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 from uuid import UUID, uuid4
 
@@ -20,6 +20,9 @@ class TimeSession(BaseModel):
     )
     description: Optional[str] = Field(
         None, max_length=1000, description="Optional task description"
+    )
+    project_id: Optional[UUID] = Field(
+        None, description="Associated project ID"
     )
     tags: List[str] = Field(
         default_factory=list, description="Tags associated with the task"
@@ -48,10 +51,37 @@ class TimeSession(BaseModel):
     @field_validator("end_time")
     @classmethod
     def validate_end_time(cls, v: Optional[datetime], info: Any) -> Optional[datetime]:
-        """Validate that end_time is after start_time."""
-        if v is not None and info.data.get("start_time"):
-            if v <= info.data["start_time"]:
-                raise ValueError("End time must be after start time")
+        """Validate that end_time is after start_time and not in the future."""
+        if v is not None:
+            # Check that end time is not in the future
+            now = datetime.now(timezone.utc)
+            if v > now:
+                raise ValueError("End time cannot be in the future")
+            
+            # Check that end time is after start time
+            if info.data.get("start_time"):
+                if v <= info.data["start_time"]:
+                    raise ValueError("End time must be after start time")
+                
+                # Check for reasonable duration (not more than 24 hours)
+                duration = v - info.data["start_time"]
+                if duration.total_seconds() > 86400:  # 24 hours
+                    raise ValueError("Session duration cannot exceed 24 hours")
+        return v
+
+    @field_validator("start_time")
+    @classmethod
+    def validate_start_time(cls, v: datetime) -> datetime:
+        """Validate start_time."""
+        # Check that start time is not more than 7 days in the future
+        now = datetime.now(timezone.utc)
+        if v > now + timedelta(days=7):
+            raise ValueError("Start time cannot be more than 7 days in the future")
+        
+        # Check that start time is not more than 1 year in the past (reasonable limit)
+        if v < now - timedelta(days=365):
+            raise ValueError("Start time cannot be more than 1 year in the past")
+        
         return v
 
     @field_validator("tags")
@@ -92,10 +122,41 @@ class DailyStats(BaseModel):
     )
 
 
+class Project(BaseModel):
+    """Model for project organization."""
+
+    id: UUID = Field(default_factory=uuid4, description="Unique project identifier")
+    name: str = Field(..., min_length=1, max_length=255, description="Project name")
+    description: Optional[str] = Field(
+        None, max_length=1000, description="Project description"
+    )
+    parent_id: Optional[UUID] = Field(
+        None, description="Parent project ID for hierarchy"
+    )
+    is_active: bool = Field(default=True, description="Whether project is active")
+    default_tags: List[str] = Field(
+        default_factory=list, description="Default tags for tasks in this project"
+    )
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="Project creation time",
+    )
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict, description="Additional project metadata"
+    )
+
+    @field_validator("name")
+    @classmethod
+    def validate_name(cls, v: str) -> str:
+        """Validate and normalize project name."""
+        return v.strip()
+
+
 class ProjectStats(BaseModel):
     """Model for project-based statistics."""
 
     task_name: str = Field(..., description="Task/project name")
+    project_name: Optional[str] = Field(None, description="Associated project name")
     total_duration: float = Field(0.0, description="Total time spent in seconds")
     session_count: int = Field(0, description="Number of sessions")
     average_session: float = Field(
