@@ -270,7 +270,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Download all security reports
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           path: security-reports/
         continue-on-error: true
