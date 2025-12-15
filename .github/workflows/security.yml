@@ -43,7 +43,7 @@ jobs:
 
       - name: Upload safety report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: safety-report
           path: safety-report.json
@@ -74,7 +74,7 @@ jobs:
 
       - name: Upload bandit report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: bandit-report
           path: bandit-report.json
@@ -127,7 +127,7 @@ jobs:
 
       - name: Upload secrets scan artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: trivy-secrets-report
           path: trivy-secrets.sarif
@@ -177,7 +177,7 @@ jobs:
 
       - name: Upload vulnerability scan artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: trivy-vulnerability-report
           path: trivy-results.sarif
@@ -248,7 +248,7 @@ jobs:
 
       - name: Upload Semgrep results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: semgrep-analysis-report
           path: semgrep-results.json
